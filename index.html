@@ -1,21 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="./css/amazeui.min.css">
+    <link rel="stylesheet" href="./css/base.css">
     <title>智慧校园</title>
 </head>
+
 <body>
+    <div id="header">
+        <span id="pagetitle">
+            智慧校园</span>
+        <span id="backhome" class="am-icon-home am-icon-md"></span>
+        <button class="am-btn am-btn-primary basecolor" data-am-offcanvas="{target: '#sidebar', effect: 'push'}">
+            <i class="am-header-icon am-icon-bars" style="font-size: 3rem;"></i>
+        </button>
+        <div id="silderouter">
+            <div class="am-slider am-slider-default" data-am-flexslider id="slider">
+                <ul class="am-slides">
+                    <li>
+                        <img src="http://s.amazeui.org/media/i/demos/bing-1.jpg" />
+                    </li>
+                    <li>
+                        <img src="http://s.amazeui.org/media/i/demos/bing-2.jpg" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 侧边栏内容 -->
+        <div id="sidebar" class="am-offcanvas">
+            <div class="am-offcanvas-bar">
+                <div class="am-offcanvas-content">
+                    <div id="loginheader">
+                        <span>登录智慧校园</span>
+                        <br/>
+                        <button type="button" class="am-btn am-btn-default am-round" id="loginbtn">立即登录</button>
+                    </div>
+                </div>
+                <ul class="am-list am-list-static am-list-border" id="sidebarlist">
+                    <li uid="userinfo">
+                        <i class="am-icon-home am-icon-fw"></i>
+                        个人信息</li>
+                    <li>
+                        <i class="am-icon-book am-icon-fw"></i>
+                        通知</li>
+                    <li>
+                        <i class="am-icon-book am-icon-fw"></i>
+                        论坛管理</li>
+                    <li uid="mylosefound">
+                        <i class="am-icon-book am-icon-fw"></i>
+                        我的物品</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <!-- 主页面 -->
     <div id="content"></div>
     <!-- 一些对话框之类的 -->
     <div id="otherplug"></div>
+    <!-- 评论列表 -->
+    <div id="comments">
+        <button type="button" class="am-btn am-btn-primary" id="savecomment">评论</button>
+        <button type="button" class="am-btn am-btn-danger" id="closecomment">关闭评论区</button>
+        <div class="am-modal am-modal-prompt" tabindex="-1" id="commentprompt">
+            <div class="am-modal-dialog">
+                <div class="am-modal-hd">玩转校园</div>
+                <div class="am-modal-bd">
+                    来来来，吐槽点啥吧
+                    <input type="text" class="am-modal-prompt-input">
+                </div>
+                <div class="am-modal-footer">
+                    <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                    <span class="am-modal-btn" data-am-modal-confirm>提交</span>
+                </div>
+            </div>
+        </div>
+        <div class="inner-container">
+            <div class="content"></div>
+        </div>
+    </div>
     <script src="./js/plug/jquery.min.js"></script>
     <script src="./js/plug/amazeui.min.js"></script>
     <script src="./js/plug/amazeui.ie8polyfill.min.js"></script>
     <script src="./js/plug/amazeui.widgets.helper.min.js"></script>
     <script src="./js/base/base.js"></script>
 </body>
+
 </html>

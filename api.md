@@ -46,16 +46,16 @@ res:   是否成功
 req:   token  
 res:   标题  内容   图片（最多三张）  联系人方式   类型   id
 
-
 ##  查询附近商家活动
 req:  token
 res:  标题   内容   图片（最多五张）  联系人方式   类型   地址   id
 
 ##  评论
-req:  token  类型（商家活动 兼职 论坛 ） 内容
+req:  token  类型（商家活动 兼职 论坛 ） 内容   usericon
 res:  是否成功 
 
 ##  获取评论内容
 req:  token  类型（商家活动 兼职 论坛 ） id
-res:  内容
+res:  内容   评论时间  usericon
+
 

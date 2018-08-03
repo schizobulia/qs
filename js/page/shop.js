@@ -1,0 +1,3 @@
+(function () {
+    hideTobar('hide');
+})();

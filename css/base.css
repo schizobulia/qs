@@ -1,0 +1,262 @@
+/* css文件 */
+.basecolor{
+    background-color: #C20C0C;
+    border-color: #C20C0C;
+}
+body{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+#header{
+    height: 35%;
+    width: 100%;
+    background-color: #C20C0C;
+}
+#content{
+    position: absolute;
+    width: 100%;
+    /* height: 100%; */
+}
+#content .page{
+    margin-top: 15px;
+}
+#sidebar > div > div{
+    background: url(../img/loginheader.jpeg) 0 0 no-repeat;
+    background-size: 100% 100%;
+}
+#sidebar #loginheader{
+    text-align: center;
+    color: white;
+}
+#sidebar #loginheader > button{
+    margin-top: 20px;
+    border: 1px solid white;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: beige;
+    width: 65%;
+}
+/* 修改amazeui的css */
+.am-btn-primary:focus, .am-btn-primary:hover{
+    background-color: #C20C0C;
+}
+.am-panel{
+    height: 35px;
+}
+.am-offcanvas-bar{
+    background: white;
+}
+#indexpage{
+    margin-bottom: 10px;
+    height: 160px;
+    margin-top: 10px;
+}
+#indexpage .am-u-sm-3{
+    height: 50%;
+}
+#indexpage > div > span{
+    position: absolute;
+    height: 70%;
+    width: 70%;
+    background-color: #C20C0C;
+    border-radius: 50%;
+    top: 15%;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+#indexpage > div > span > em{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: -25px;
+    color: black;
+}
+
+#header #silderouter{
+    position: absolute;
+    height: 29%;
+    overflow: hidden;
+    width: 100%;
+}
+#indexpage > div:nth-child(1) > span{
+    background-image: url(../img/video.png);
+}
+#indexpage > div:nth-child(2) > span{
+    background-image: url(../img/merchants.png);
+}
+#indexpage > div:nth-child(3) > span{
+    background-image: url(../img/lostfound.png);
+}
+#indexpage > div:nth-child(4) > span{
+    background-image: url(../img/shop.png);
+}
+#indexpage > div:nth-child(5) > span{
+    background-image: url(../img/bbs.png);
+}
+
+/* home页面 */
+#header > span.am-icon-home.am-icon-md{
+    right: 15px;
+    height: 54px;
+    position: absolute;
+    line-height: 54px;
+    z-index: 2;
+    color: white;
+}
+#recommended .title{
+    height: 30px;
+    line-height: 30px;
+    color: black;
+    font-size: 17px;
+    margin-top: 22px;
+    text-align: center;
+}
+#pagetitle{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    height: 54px;
+    line-height: 54px;
+    font-size: 20px;
+    color: white;
+    font-weight: bold;
+}
+/* 登陆 */
+#loginpage > form{
+    margin-top: 10px;
+    text-align: center;
+}
+#loginpage > form > button{
+    width: 70%;
+    background-color: #C20C0C;
+}
+
+/* 个人信息 */
+#userinfo{
+    margin-top: 20px;
+}
+
+#userinfo > div.am-panel{
+    line-height: 35px;
+}
+
+/* 失物招领 */
+#pagelosefound > article > div.images{
+    position: relative;
+}
+#pagelosefound > article > div.images > img{
+    width: 50%;
+}
+#pagelosefound > article > div.images > img:nth-child(2){
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+#pagelosefound > article > div.am-article-bd > p.am-article-lead{
+    margin: 0 0 0 0;
+}
+#pagelosefound > article > div.am-article-bd > button{
+    width: 100%;
+}
+#pagelosefound #writeinfo{
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+}
+/*
+填写失物招领的信息
+*/
+#writelosepage > form{
+    margin-top: 10px;
+}
+#writelosepage > form > fieldset > p:nth-child(1){
+    position: relative;
+    height: 150px;
+    width: 100%; 
+}
+#writelosepage > form > fieldset > p:nth-child(1) > img{
+    width: 50%;
+    position: absolute;
+    left: 0px;
+    height: 100%;
+}
+#writelosepage > form > fieldset > p:nth-child(1) > img:nth-child(3){
+    left: 50%;
+}
+#writelosepage > form > fieldset > p:nth-child(1) > input:nth-child(4){
+    left: 50%;
+}
+#writelosepage > form > fieldset > p:nth-child(1) > input{
+    width: 50%;
+    position: absolute;
+    left: 0px;
+    height: 100%;
+    z-index: 2;
+    opacity: 0;
+}
+#writelosepage > form > fieldset > p:nth-child(3) > button{
+    width: 100%;
+}
+
+
+/* 个人失物 */
+#mylosefoundpage > table > tbody > tr > td.content{
+    display: inline-block;
+    width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#mylosefoundpage > table > tbody > tr > td{
+    height: 54px;
+    line-height: 54px;
+}
+
+/**
+论坛
+**/
+#bbspage > ul > li > article > div > footer > div > a.icon{
+    font-size: 20px;
+}
+
+
+/* 评论 */
+#comments{
+    position: relative;
+    overflow: hidden;
+    height: 92%;
+    background-color: snow;
+    z-index: 2;
+    display: none;
+}
+#comments > div.inner-container{
+    position: absolute;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 100%;
+}
+#comments > div.inner-container > div.content{
+    width: 100%;
+}
+
+#comments .inner-container::-webkit-scrollbar {
+    display: none;
+}
+#comments > div > div > article:last-child{
+    margin-bottom: 30px;
+}
+#comments #savecomment{
+    position: fixed;
+    z-index: 3;
+    width: 100%;
+    bottom: 0px;
+}
+body > div.am-dimmer.am-active{
+    display: none !important;
+}
+#comments #closecomment{
+    position: fixed;
+    z-index: 3;
+    right: 0px;
+}
