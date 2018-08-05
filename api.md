@@ -59,3 +59,11 @@ req:  token  类型（商家活动 兼职 论坛 ） id
 res:  内容   评论时间  usericon
 
 
+##  获取二手市场所有内容
+req:  token
+res:  内容  价格  usericon 电话  图片(最多三张)  类型 
+
+##  获取类型
+req:  token  类型(商家活动   兼职   二手市场)
+res:  该类型下所有的type 
+

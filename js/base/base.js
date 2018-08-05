@@ -1,8 +1,10 @@
 //项目的基类
 const pages = ['news', 'login', 'userinfo', 'bbs',
-    'losefound', 'writelose', 'mylosefound', 'shop']; //所有页面page的名称   在使用页面前请先再些注册
+    'losefound', 'writelose', 'mylosefound', 'shop', 'shopinfo'
+,'secondary', 'writesecondary']; //所有页面page的名称   在使用页面前请先再些注册
 const pageTiles = ['智慧校园', '登陆', '个人信息', '论坛',
-    '失物招领', '填写基本信息', '我的物品', '商家活动'];
+    '失物招领', '填写基本信息', '我的物品', '商家活动', '活动信息',
+'二手市场', '上传物品信息'];
 const baseUrl = 'http://www.jcyxwl.com/';  //api接口
 const contentNode = $('#content')[0];  //主内容
 const otherPlugNode = $('#otherplug')[0]; //对话框之类
@@ -44,15 +46,15 @@ window.onhashchange = function () {
 function startPage() {
     let pageName = window.location.hash;
     pageName = pageName.slice(1, pageName.length);
-    hideComments();
+    hideComments();  //如果用户直接单击返回home 则隐藏评论区
     if (inArray(pages, pageName)) {
         closeSidebar();
         backHome();
         readHTML(pageName, function (html) { });
     } else {
+        $('#header').css('height', '35%');
         hideTobar('show');
         readHTML(defaultPage, function (html) {
-            $('#header').css('height', '35%');
         });
     }
 }

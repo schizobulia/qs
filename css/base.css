@@ -260,3 +260,103 @@ body > div.am-dimmer.am-active{
     z-index: 3;
     right: 0px;
 }
+
+
+/* 商家活动 */
+#shoppage > div{
+    margin: 0px;
+}
+#shoppage > div > div.am-list-news-bd > ul > li > img{
+    width: 150px;
+    height: 150px;
+}
+#shoppage > div > div.am-list-news-bd > ul > li > div{
+    position: absolute;
+    top: 0px;
+    left: 150px;
+    width: 63%;
+    height: 150px;
+}
+
+#shoppage > div > div.am-list-news-bd > ul > li > div > p.title{
+    height: 30px;
+    margin: 0 0 0 0;
+    font-size: 21px;
+}
+#shoppage > div > div.am-list-news-bd > ul > li > div > p.content{
+    max-height: 100px;
+    margin: 0 0 0 0;
+    height: 100px;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+}
+
+#shoppage > div > div.am-list-news-bd > ul > li > div > p.bottom{
+    margin: 0 0 0 0;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+#shoppage > div > div.am-list-news-bd > ul > li > div > p.bottom > span{
+    float: right;
+}
+/* 二手市场 */
+#secondarypage > ul > li > article > div > footer > div > a.am-badge{
+    color: white;
+    font-size: 16px;
+}
+#secondarypage #secondary{
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+}
+
+/* 填写二手信息 */
+#writesecondarypage > form > fieldset > p:nth-child(1){
+    position: relative;
+    height: 150px;
+    width: 100%;
+}
+#writesecondarypage > form > fieldset > p:nth-child(1) > img{
+    width: 30%;
+    position: absolute;
+    left: 0px;
+    height: 100%;
+}
+#writesecondarypage > form > fieldset > p:nth-child(1) > input{
+    width: 30%;
+    position: absolute;
+    left: 0px;
+    height: 100%;
+    z-index: 2;
+    opacity: 0;
+}
+#writesecondarypage > form > fieldset > p:nth-child(1) > img:nth-child(3){
+    left: 30%;
+}
+#writesecondarypage > form > fieldset > p:nth-child(1) > input:nth-child(4){
+    left: 30%;
+}
+#writesecondarypage > form > fieldset > p:nth-child(1) > img:nth-child(5){
+    left: 60%;
+}
+#writesecondarypage #fileimage3{
+    left: 60%;
+}
+#writesecondarypage > form > fieldset > p > .s{
+    margin-left: 5%;
+    margin-right: 5%;
+}
+#writesecondarypage > form > fieldset > div.type{
+    margin-top: 1.5rem;
+}
+#writesecondarypage > form > fieldset > div.type > span{
+    margin-left: 20px;
+}
+#writesecondarypage > form > fieldset > p:nth-child(5) > button{
+    width: 100%;
+}
