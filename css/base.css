@@ -13,6 +13,10 @@ body{
     width: 100%;
     background-color: #C20C0C;
 }
+/* #header > button{
+    position: absolute;
+    height: 8%;
+} */
 #content{
     position: absolute;
     width: 100%;
@@ -36,6 +40,26 @@ body{
     color: beige;
     width: 65%;
 }
+#slider > div > ul{
+    height: 100%;
+}
+#slider > div > ul > li {
+    height: 100%;
+}
+#slider > div > ul > li > img {
+    height: 100%;
+}
+/* 滑动 */
+#slider{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+#slider > div{
+    position: relative;
+    height: 100%;
+}
+
 /* 修改amazeui的css */
 .am-btn-primary:focus, .am-btn-primary:hover{
     background-color: #C20C0C;
@@ -122,6 +146,9 @@ body{
     font-weight: bold;
 }
 /* 登陆 */
+#loginheader > img{
+    height: 82px;
+}
 #loginpage > form{
     margin-top: 10px;
     text-align: center;
@@ -130,7 +157,11 @@ body{
     width: 70%;
     background-color: #C20C0C;
 }
-
+#loginpage > form > div:nth-child(3){
+    text-align: right;
+    margin-right: 15px;
+    color: #0e90d2;
+}
 /* 个人信息 */
 #userinfo{
     margin-top: 20px;
@@ -358,5 +389,27 @@ body > div.am-dimmer.am-active{
     margin-left: 20px;
 }
 #writesecondarypage > form > fieldset > p:nth-child(5) > button{
+    width: 100%;
+}
+/* 兼职 */
+#parttimepage > ul > li > article > div > footer > div > a.am-badge{
+    color: white;
+    font-size: 16px;
+}
+
+/* 论坛管理 */
+#bbsmanagementpage > table{
+    margin-top: 16px;
+}
+#bbsmanagementpage > table > tbody > tr > td.content{
+    display: inline-block;
+    width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 单个论坛中的信息 */
+#bbsinfopage #del{
     width: 100%;
 }

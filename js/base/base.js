@@ -1,16 +1,16 @@
 //项目的基类
 const pages = ['news', 'login', 'userinfo', 'bbs',
     'losefound', 'writelose', 'mylosefound', 'shop', 'shopinfo'
-,'secondary', 'writesecondary']; //所有页面page的名称   在使用页面前请先再些注册
+    , 'secondary', 'writesecondary', 'parttime', 'collegenotice'
+    , 'bbsmanagement', 'bbsinfo']; //所有页面page的名称   在使用页面前请先再些注册
 const pageTiles = ['智慧校园', '登陆', '个人信息', '论坛',
     '失物招领', '填写基本信息', '我的物品', '商家活动', '活动信息',
-'二手市场', '上传物品信息'];
-const baseUrl = 'http://www.jcyxwl.com/';  //api接口
+    '二手市场', '上传物品信息', '兼职', '学院通知', '论坛管理', '具体信息'];
+const baseUrl = 'http://192.168.43.10:8080/test/';  //api接口
 const contentNode = $('#content')[0];  //主内容
 const otherPlugNode = $('#otherplug')[0]; //对话框之类
 const commentsNode = $('#comments');   //评论模块的父node
 const defaultPage = pages[0]; //默认显示主页
-
 /**
  * 模块间通信
  */
@@ -54,8 +54,7 @@ function startPage() {
     } else {
         $('#header').css('height', '35%');
         hideTobar('show');
-        readHTML(defaultPage, function (html) {
-        });
+        readHTML(defaultPage, function (html) { });
     }
 }
 
@@ -72,11 +71,20 @@ window.onload = function () {
 
 //初始化页面
 function initPage() {
-    httpGet({ url: ',', data: { a: 1 } }, function (data) {
-        silderTabClick();
-        readHTML(defaultPage, function (html) {
-            saveComment();
-        });
+    // httpGet({
+    //     url: 'http://192.168.43.10:8080/test',
+    //     data: { nubler: 123456789, pass: '' }
+    // }, function (data) {
+    //     console.log(data)
+    //     silderTabClick();
+    //     readHTML(defaultPage, function (html) {
+    //         saveComment();
+    //     });
+    // });
+    silderTabClick();
+    readHTML(defaultPage, function (html) {
+        alert('a')
+        saveComment();
     });
 }
 
@@ -176,7 +184,7 @@ function httpGet(ajaxData, sucCallback) {
     $.ajax({
         type: 'get',
         // url: baseUrl + ajaxData.url,
-        url: `https://www.jcyxwl.com/API/test.php`,
+        url: ajaxData.url,
         dataType: 'json',
         async: false,
         data: ajaxData.data,
@@ -206,11 +214,15 @@ function readHTML(pageName, sucCallback) {
         async: false,
         url: `/page/${pageName}.html`,
         success: function (result) {
+            alert([pageName])
             setShowPage(pageName, result);
             sucCallback(result);
             changePageTitle(pageName);
             loadPageScrpat(pageName, function () { });
-        }
+        },
+        error: function (err) {
+            alert(err)
+        },
     });
 }
 /**
