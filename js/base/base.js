@@ -11,6 +11,7 @@ const contentNode = $('#content')[0];  //主内容
 const otherPlugNode = $('#otherplug')[0]; //对话框之类
 const commentsNode = $('#comments');   //评论模块的父node
 const defaultPage = pages[0]; //默认显示主页
+let isHomePage = true;  //用户是否在主页
 /**
  * 模块间通信
  */
@@ -48,14 +49,17 @@ function startPage() {
     pageName = pageName.slice(1, pageName.length);
     hideComments();  //如果用户直接单击返回home 则隐藏评论区
     if (inArray(pages, pageName)) {
+        isHomePage = false;
         closeSidebar();
         backHome();
         readHTML(pageName, function (html) { });
     } else {
+        isHomePage = true;
         $('#header').css('height', '35%');
         hideTobar('show');
         readHTML(defaultPage, function (html) { });
     }
+    changeHeadeLeft();
 }
 
 function backHome() {
@@ -67,6 +71,19 @@ function backHome() {
 
 window.onload = function () {
     startPage();
+}
+/**
+ * 修改头部返回按钮
+ * @param {*} isHome 
+ */
+function changeHeadeLeft() {
+    if (isHomePage) {
+        $('#header #windowback').css('display', 'none');
+        $('#header > button > i').removeClass('am-icon-chevron-left').addClass('am-icon-bars');
+    } else {
+        $('#header #windowback').css('display', 'block');
+        $('#header > button > i').removeClass('am-icon-bars').addClass('am-icon-chevron-left');
+    }
 }
 
 //初始化页面
@@ -83,7 +100,6 @@ function initPage() {
     // });
     silderTabClick();
     readHTML(defaultPage, function (html) {
-        alert('a')
         saveComment();
     });
 }
@@ -114,7 +130,7 @@ function hideTobar(type) {
         $('#header').css('height', '8%');
         $('#silderouter').css('display', 'none');
     } else {
-        $('#silderouter').css('display', 'block');
+        $('#silderouter').css('display', 'block').css('top', '8%');
         $('#header').css('height', '35%');
     }
 }
@@ -207,14 +223,12 @@ function httpGet(ajaxData, sucCallback) {
  */
 function readHTML(pageName, sucCallback) {
     if (!inArray(pages, pageName)) {
-        alert('请先注册次页面！');
         return;
     }
     $.ajax({
         async: false,
         url: `/page/${pageName}.html`,
         success: function (result) {
-            alert([pageName])
             setShowPage(pageName, result);
             sucCallback(result);
             changePageTitle(pageName);
@@ -287,6 +301,10 @@ function silderTabClick() {
         if (inArray(pages, pageName)) {
             changeHash(pageName);
         }
+    });
+
+    $('#windowback').click(function (e) {
+        window.history.back();
     });
 }
 /**

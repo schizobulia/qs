@@ -13,14 +13,21 @@ body{
     width: 100%;
     background-color: #C20C0C;
 }
-/* #header > button{
-    position: absolute;
+#header > button{
+    overflow: hidden;
     height: 8%;
-} */
+    position: absolute;
+}
+#header #windowback{
+    height: 8%;
+    position: absolute;
+    width: 59.72px;
+    display: none;
+    z-index: 2;
+}
 #content{
     position: absolute;
     width: 100%;
-    /* height: 100%; */
 }
 #content .page{
     margin-top: 15px;
@@ -94,6 +101,7 @@ body{
     text-align: center;
     bottom: -25px;
     color: black;
+    white-space: nowrap;
 }
 
 #header #silderouter{
@@ -115,6 +123,9 @@ body{
     background-image: url(../img/shop.png);
 }
 #indexpage > div:nth-child(5) > span{
+    background-image: url(../img/bbs.png);
+}
+#indexpage > div:nth-child(6) > span{
     background-image: url(../img/bbs.png);
 }
 
@@ -156,6 +167,7 @@ body{
 #loginpage > form > button{
     width: 70%;
     background-color: #C20C0C;
+    color: white;
 }
 #loginpage > form > div:nth-child(3){
     text-align: right;
@@ -193,6 +205,12 @@ body{
     position: fixed;
     bottom: 0px;
     width: 100%;
+}
+#pagelosefound > article:nth-last-child(){
+    margin-bottom: 2.4em;
+}
+#pagelosefound > article:nth-child(3){
+    margin-bottom: 2.4em;
 }
 /*
 填写失物招领的信息
@@ -275,7 +293,7 @@ body{
     display: none;
 }
 #comments > div > div > article:last-child{
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 #comments #savecomment{
     position: fixed;
@@ -339,6 +357,7 @@ body > div.am-dimmer.am-active{
 #secondarypage > ul > li > article > div > footer > div > a.am-badge{
     color: white;
     font-size: 16px;
+    margin-top: 5px;
 }
 #secondarypage #secondary{
     position: fixed;
@@ -395,6 +414,7 @@ body > div.am-dimmer.am-active{
 #parttimepage > ul > li > article > div > footer > div > a.am-badge{
     color: white;
     font-size: 16px;
+    margin-top: 5px;
 }
 
 /* 论坛管理 */
@@ -412,4 +432,9 @@ body > div.am-dimmer.am-active{
 /* 单个论坛中的信息 */
 #bbsinfopage #del{
     width: 100%;
+}
+
+/* 活动单个信息 */
+#shopinfopage > div > div > div > div > p:nth-child(3) > button{
+    margin-top: 5px;
 }
