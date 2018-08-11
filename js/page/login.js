@@ -18,10 +18,39 @@
     });
     dom.find('#btnreglog').click(function (e) {
         let uid = $('#btnreglog').attr('uid');
+        let name = $('#name').val();
+        let password = $('#password').val();
+        if (!isAjaxNull(name, password)) {
+            return;
+        }
+        if (name.lenght < 11) {
+            alert('学号不能超过11位...')
+            return;
+        } else if (password.lenght > 11) {
+            alert('学号不能超过11位');
+            return;
+        }
+
         if (parseInt(uid) === 1) {
             //登陆
+            httpGet({
+                url: '/student/login',
+                data: { studentnumber: name, pass: password }
+            }, function (data) {
+                user.token = data.token;
+                getUserInfo(data.token);
+                window.localStorage.setItem('token', data.token);
+            });
         } else {
             //注册
+            httpGet({
+                url: '/student/sign',
+                data: { studentnumber: name, pass: password }
+            }, function (data) {
+                user.token = data.token;
+                getUserInfo(data.token);
+                window.localStorage.setItem('token', data.token);
+            });
         }
     });
 })();

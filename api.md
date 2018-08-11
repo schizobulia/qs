@@ -107,3 +107,12 @@ req: token
 <br />
 res: 内容  联系人方式  状态(是否已找回)  发布时间 
 
+## 修改个人信息
+req:  token  name  department  name   sex   studentnumber   描述   班级   
+<br />
+res: 内容  联系人方式  状态(是否已找回)  发布时间
+
+
+
+ 
+

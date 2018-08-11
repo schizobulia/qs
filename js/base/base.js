@@ -6,18 +6,19 @@ const pages = ['news', 'login', 'userinfo', 'bbs',
 const pageTiles = ['智慧校园', '登陆', '个人信息', '论坛',
     '失物招领', '填写基本信息', '我的物品', '商家活动', '活动信息',
     '二手市场', '上传物品信息', '兼职', '学院通知', '论坛管理', '具体信息'];
-const baseUrl = 'http://192.168.43.10:8080/test/';  //api接口
+const baseUrl = 'http://www.cmycgzs.com';  //api接口
 const contentNode = $('#content')[0];  //主内容
 const otherPlugNode = $('#otherplug')[0]; //对话框之类
 const commentsNode = $('#comments');   //评论模块的父node
 const defaultPage = pages[0]; //默认显示主页
 let isHomePage = true;  //用户是否在主页
+
 /**
  * 模块间通信
  */
 let HandlerModule = {
     commentType: 'bbs',   //评论时提交的类型
-
+    bbsTypes: ['游戏', '新闻'],
 }
 let user = {};
 //错误码
@@ -88,20 +89,12 @@ function changeHeadeLeft() {
 
 //初始化页面
 function initPage() {
-    // httpGet({
-    //     url: 'http://192.168.43.10:8080/test',
-    //     data: { nubler: 123456789, pass: '' }
-    // }, function (data) {
-    //     console.log(data)
-    //     silderTabClick();
-    //     readHTML(defaultPage, function (html) {
-    //         saveComment();
-    //     });
-    // });
+    const token = window.localStorage.getItem('token');
+    if (token) {
+        user.token = token;
+        getUserInfo();
+    }
     silderTabClick();
-    readHTML(defaultPage, function (html) {
-        saveComment();
-    });
 }
 
 /**
@@ -184,6 +177,7 @@ function isAjaxNull(...array) {
     for (let index = 0; index < array.length; index++) {
         const element = array[index];
         if (element === 'undefined' || !element || element === '') {
+            alert('输入不能为空!');
             return false;
         }
     }
@@ -197,10 +191,16 @@ function isAjaxNull(...array) {
 * @param {*} sucCallback 
 */
 function httpGet(ajaxData, sucCallback) {
+    loadingDailog('show', '加载中...');
+    if (user.token) {
+        ajaxData.data.token = user.token;
+    } else {
+        ajaxData.data.token = 0;
+    }
+
     $.ajax({
         type: 'get',
-        // url: baseUrl + ajaxData.url,
-        url: ajaxData.url,
+        url: baseUrl + ajaxData.url,
         dataType: 'json',
         async: false,
         data: ajaxData.data,
@@ -209,14 +209,48 @@ function httpGet(ajaxData, sucCallback) {
                 sucCallback(msg);
             }
             else {
-                alert(ErrorMsg[msg.status]);
+                alert(msg.error);
             }
+            loadingDailog('hide');
         },
         error: function (err) {
             console.log(err);
+            loadingDailog('hide');
+            alert('服务器异常, 请刷新重试!');
         },
     });
 }
+
+function postHttp(url, formData, sucCallback) {
+    loadingDailog('show', '加载中...');
+    if (user.token) {
+        formData.append('token', user.token);
+    } else {
+        formData.append('token', 0);
+    }
+
+    $.ajax({
+        url: baseUrl + url,
+        data: formData,
+        method: 'POST',
+        contentType: false,
+        processData: false,
+        success: function (data) {
+            if (parseInt(data.code) === 1) {
+                sucCallback(data);
+            }
+            loadingDailog('hide');
+        },
+        error: function (responseStr) {
+            console.error(responseStr);
+            loadingDailog('hide');
+            alert('网络异常,请刷新界面重试!');
+        }
+    });
+}
+
+
+
 /**
  * 获取单个页面
  * @param {*} sucCallback 
@@ -225,17 +259,20 @@ function readHTML(pageName, sucCallback) {
     if (!inArray(pages, pageName)) {
         return;
     }
+    loadingDailog('show', '加载中...');
     $.ajax({
         async: false,
         url: `/page/${pageName}.html`,
         success: function (result) {
+            loadingDailog('hide');
             setShowPage(pageName, result);
             sucCallback(result);
             changePageTitle(pageName);
             loadPageScrpat(pageName, function () { });
         },
         error: function (err) {
-            alert(err)
+            loadingDailog('hide');
+            console.log(err);
         },
     });
 }
@@ -274,22 +311,15 @@ function showDialog(title, content, sucCallback) {
  * @param {*} node  用户单击显示加载动画的  标签
  * @param {*} content 显示的内容
  */
-function loadingDailog(type, node, content) {
+function loadingDailog(type, content) {
     if (type === 'show') {
-        $(node).attr('data-am-modal', "{target: '#loaddialog'}");
         let html = `<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="loaddialog"><div class="am-modal-dialog"><div class="am-modal-hd">${content}</div><div class="am-modal-bd"><span class="am-icon-spinner am-icon-spin"></span></div></div></div>`
         otherPlugNode.innerHTML = html;
+        $('#loaddialog').modal('toggle');
     } else {
+        $('#loaddialog').modal('close');
         otherPlugNode.innerHTML = '';
     }
-}
-
-/**
- * 登录
- * @param {*} arr 
- */
-function login(...arr) {
-
 }
 
 /**
@@ -315,6 +345,26 @@ function changeHash(hash) {
     window.location.href = window.location.origin + `#${hash}`;
 }
 
+
+/**
+ * 获取用户基本信息
+ * @param {*} token 
+ */
+function getUserInfo(token) {
+    httpGet({
+        url: '/student/findstudent',
+        data: {},
+    }, function (data) {
+        user.info = data.data;
+        $('#loginheader > span').css('display', 'none');
+        $('#loginbtn').css('display', 'none');
+        $('#usericon').css('display', 'block');
+        if (user.info.image) {
+            $('#usericon').attr('src', user.image);
+        }
+        // changeHash('');
+    });
+}
 /*
 三个参数
 file：一个是文件(类型是图片格式)，
@@ -409,13 +459,14 @@ function showImageByBase64(that, imgNode, callback) {
 function hideComments() {
     $('#comments .content').html();
     commentsNode.fadeOut(500);
+    $(contentNode).show();
 }
 
 /**
  * 显示评论模块
  * @param {*} array 
  */
-function showComments(array) {
+function showComments(array, uid) {
     let html = '';
     for (let index = 0; index < array.length; index++) {
         const element = array[index];
@@ -425,27 +476,35 @@ function showComments(array) {
         <div class="am-comment-main"><header class="am-comment-hd">
             <div class="am-comment-meta">
             <a href="#link-to-user" class="am-comment-author"></a> 评论于
-            <time datetime="2013-07-27T04:54:29-07:00" title="2013年7月27日 下午7:54 格林尼治标准时间+0800">2014-7-12 15:30</time>
+            <time datetime="${element.time}" title="${element.time}">${element.time}</time>
             </div></header><div class="am-comment-bd">
-                <p>那，那是一封写给南部母亲的信。我茫然站在骑楼下，我又看到永远的樱子走到街心。其实雨下得并不大，却是一生一世中最大的一场雨。而那封信是这样写的，年轻的樱子知不知道呢？</p>
+                <p>${element.cont}</p>
             </div></div></article>`
     }
-    $('#comments .content').html(html);
+    $('#comments .content').html(html).attr('uid', uid);
     commentsNode.show();
+    $(contentNode).hide();
 }
 //评论
-function saveComment() {
+function saveComment(sucCallback) {
     $('#comments #savecomment').click(function () {
         $('#commentprompt').modal({
             relatedTarget: this,
             onConfirm: function (e) {
-                alert('你输入的是：' + e.data || '')
+                if (e.data) {
+                    sucCallback(e.data);
+                } else {
+                    alert('输入不能为空');
+                }
+                // alert('你输入的是：' + e.data || '')
             },
             onCancel: function (e) { }
         });
     });
     $('#comments #closecomment').click(function () {
         commentsNode.hide();
+        $(contentNode).show();
     });
 }
+
 
