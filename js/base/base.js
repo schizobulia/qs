@@ -1,8 +1,8 @@
 'use strict';
 
 //项目的基类
-var pages = ['bbs']; //所有页面page的名称   在使用页面前请先再些注册
-var pageTiles = ['智慧校园'];
+var pages = ['page1', 'page2']; //所有页面page的名称   在使用页面前请先再些注册
+var pageTiles = ['页面1', '页面2'];
 
 var baseUrl = 'http://www.cmycgzs.com'; //api接口
 var contentNode = $('#content')[0]; //主内容
@@ -39,12 +39,12 @@ BaseClass.startPage = function () {
         isHomePage = false;
         BaseClass.closeSidebar();
         BaseClass.backHome();
-        BaseClass.readHTML(pageName, function (html) {});
+        BaseClass.readHTML(pageName, function (html) { });
     } else {
         isHomePage = true;
-        $('#header').css('height', '35%');
+        $('#header').css('height', '53px');
         BaseClass.hideTobar('show');
-        BaseClass.readHTML(defaultPage, function (html) {});
+        BaseClass.readHTML(defaultPage, function (html) { });
     }
     BaseClass.changeHeadeLeft();
 };
@@ -75,7 +75,6 @@ window.onhashchange = function () {
 BaseClass.backHome = function () {
     $('#backhome').click(function (e) {
         BaseClass.changeHash('');
-        BaseClass.hideComments();
     });
 };
 
@@ -106,7 +105,7 @@ BaseClass.closeSidebar = function () {
 };
 //初始化页面
 function initPage() {
-    $('#header').hide();
+    // $('#header').hide();
     BaseClass.silderTabClick();
 }
 
@@ -130,7 +129,7 @@ BaseClass.hideTobar = function (type) {
         $('#silderouter').css('display', 'none');
     } else {
         $('#silderouter').css('display', 'block').css('top', '8%');
-        $('#header').css('height', '35%');
+        $('#header').css('height', '53px');
     }
 };
 
@@ -236,7 +235,7 @@ function postHttp(url, formData, sucCallback) {
         success: function success(data) {
             if (parseInt(data.code) === 1) {
                 sucCallback(data);
-            }else{
+            } else {
                 alert(ErrorMsg[data.code]);
             }
             BaseClass.loadingDailog('hide');
@@ -266,7 +265,7 @@ BaseClass.readHTML = function (pageName, sucCallback) {
             BaseClass.setShowPage(pageName, result);
             sucCallback(result);
             BaseClass.changePageTitle(pageName);
-            BaseClass.loadPageScrpat(pageName, function () {});
+            BaseClass.loadPageScrpat(pageName, function () { });
         },
         error: function error(err) {
             BaseClass.loadingDailog('hide');
@@ -298,7 +297,7 @@ BaseClass.showDialog = function (title, content, sucCallback) {
             sucCallback();
         },
         // closeOnConfirm: false,
-        onCancel: function onCancel() {}
+        onCancel: function onCancel() { }
     });
 };
 /**
@@ -343,6 +342,7 @@ function photoCompress(file, w, objDiv) {
         canvasDataURL(re, w, objDiv);
     };
 }
+
 function canvasDataURL(path, obj, callback) {
     var img = new Image();
     img.src = path;
@@ -411,8 +411,6 @@ function showImageByBase64(that, imgNode, callback) {
             //这里bl 为文件对象
             // var formData = new FormData();
             // var bl = convertBase64UrlToBlob(base64Codes);
-            // formData.append("image", bl, "file_" + Date.parse(new Date()) + ".jpg"); // 文件对象
-            // upload(e.target.result, formData);
             callback(base64Codes);
         });
     };

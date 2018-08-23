@@ -2,6 +2,7 @@
 (function () {
     let view = $('#bbspage');
     let bbsData = null;
-    BaseClass.hideTobar('hide');
+    console.log('page1');
+    // BaseClass.hideTobar('hide');
 })();
 
