@@ -1,17 +1,16 @@
 'use strict';
 
 //项目的基类
-var pages = ['page1', 'page2']; //所有页面page的名称   在使用页面前请先再些注册
+var BaseClass = {};
+var pages = ['page1', 'page2']; //所有页面page的名称   在使用页面前请先此注册
 var pageTiles = ['页面1', '页面2'];
 
-var baseUrl = 'http://www.cmycgzs.com'; //api接口
+var baseUrl = '127.0.0.1:3000'; //api接口
 var contentNode = $('#content')[0]; //主内容
 var otherPlugNode = $('#otherplug')[0]; //对话框之类
 var commentsNode = $('#comments'); //评论模块的父node
 var defaultPage = pages[0]; //默认显示主页
 var isHomePage = true; //用户是否在主页
-
-var BaseClass = {};
 
 /**
  * 侧别栏的单击跳转事件
@@ -156,6 +155,17 @@ BaseClass.loadPageScrpat = function (pageName, sucCallback) {
         sucCallback();
     });
 };
+/**
+ * 动态加载css
+ * @param {*} pageName 
+ */
+BaseClass.loadingCss = function (pageName) {
+    $('head').children(':last').attr({
+        rel: window.location.origin + '/css/page/' + pageName,
+        type: 'text/css',
+        href: './style.css',
+    });
+}
 
 /**
  * 从数组中获取arr[key] == value 的所有数据 并生成新arr
