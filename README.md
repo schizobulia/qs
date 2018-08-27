@@ -3,6 +3,22 @@
     text-align:  center;
 ">基于jquery的单页面应用</h2>
 
+## 运行
+```
+    node的方式:
+
+    1. npm install anywhere -g
+
+    2. anywhere -f ./index.html
+    
+    其他方式:
+    
+    1. 只需将项目放置服务器上,然后访问index.html就可以.
+
+    2 请根据实际情况改变静态资源路径
+```
+
+
 1. ### 目录结构
     - css
         - [amazeui.min.css](http://amazeui.org/)
@@ -19,18 +35,17 @@
         - page1.html (模块视图层)
 
 2. ### 使用说明
-    - 只需将项目放置服务器上,然后访问index.html就可以.(请根据实际情况改变静态资源路径)
+
     - 该应用推荐新手使用,大佬请自行前往React, Vue, Angular    
 
 3. ### 创建一个模块
-    1. 创建一个view与Module(必需同名)
-    2. 在base.js中注册该模块
-    <br/>
+    - 创建一个view与Module(必需同名)
+    - 在base.js中注册该模块
     <img src="./doc/register.png"/>
     <br/>
-    3. 模块间的跳转
+    - 模块间的跳转
 
-    ```
+    ```javascript
         BaseClass.changeHash('模块名称')
     ```
 
@@ -47,8 +62,8 @@
 5. ### 常用组件
     注:所有组件在[page2](https://github.com/schizobulia/qs/blob/master/js/page/page2.js)中有具体的使用代码
     - 多图上传
-    <br />
-    ```
+
+    ```javascript
     /**
      * 多图上传组件代码
      * =============

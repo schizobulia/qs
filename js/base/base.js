@@ -2,53 +2,19 @@
 
 //项目的基类
 
-var BaseClass = {};
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 var pages = ['page1', 'page2']; //所有页面page的名称   在使用页面前请先此注册
 var pageTiles = ['页面1', '组件的使用'];
-
+var BaseClass = null;
 var baseUrl = '127.0.0.1:3000'; //api接口
 var contentNode = $('#content')[0]; //主内容
 var otherPlugNode = $('#otherplug')[0]; //对话框之类
 var commentsNode = $('#comments'); //评论模块的父node
 var defaultPage = pages[0]; //默认显示主页
 var isHomePage = true; //用户是否在主页
-
-/**
- * 侧别栏的单击跳转事件
- */
-BaseClass.silderTabClick = function () {
-    $('#sidebarlist').click(function (e) {
-        var pageName = $(e.target).attr('uid');
-        if (inArray(pages, pageName)) {
-            BaseClass.changeHash(pageName);
-        }
-    });
-
-    $('#windowback').click(function (e) {
-        window.history.back();
-    });
-};
-/**
- * 跳转页面
- * @param {*} params 
- */
-BaseClass.startPage = function () {
-    var pageName = window.location.hash;
-    pageName = pageName.slice(1, pageName.length);
-    if (inArray(pages, pageName)) {
-        isHomePage = false;
-        BaseClass.closeSidebar();
-        BaseClass.backHome();
-        BaseClass.readHTML(pageName, function (html) {});
-    } else {
-        isHomePage = true;
-        $('#header').css('height', '53px');
-        BaseClass.hideTobar('show');
-        BaseClass.readHTML(defaultPage, function (html) {});
-    }
-    BaseClass.changeHeadeLeft();
-};
-
 /**
  * 模块间通信
  */
@@ -67,69 +33,328 @@ var ErrorMsg = {
     13: '查无此任务'
 };
 
-window.onhashchange = function () {
-    BaseClass.startPage();
-};
+var Base = function () {
+    function Base() {
+        _classCallCheck(this, Base);
+    }
 
-BaseClass.backHome = function () {
-    $('#backhome').click(function (e) {
-        BaseClass.changeHash('');
-    });
-};
+    _createClass(Base, [{
+        key: 'silderTabClick',
+
+        /**
+        * 侧别栏的单击跳转事件
+        */
+        value: function silderTabClick() {
+            var that = this;
+            $('#sidebarlist').click(function (e) {
+                var pageName = $(e.target).attr('uid');
+                if (inArray(pages, pageName)) {
+                    that.changeHash(pageName);
+                }
+                that = null;
+            });
+            $('#windowback').click(function (e) {
+                window.history.back();
+            });
+        }
+
+        /**
+        * 跳转页面
+        * @param {*} params 
+        */
+
+    }, {
+        key: 'startPage',
+        value: function startPage() {
+            var pageName = window.location.hash;
+            pageName = pageName.slice(1, pageName.length);
+            if (inArray(pages, pageName)) {
+                isHomePage = false;
+                this.closeSidebar();
+                this.backHome();
+                this.readHTML(pageName, function (html) { });
+            } else {
+                isHomePage = true;
+                $('#header').css('height', '53px');
+                this.hideTobar('show');
+                this.readHTML(defaultPage, function (html) { });
+            }
+            this.changeHeadeLeft();
+        }
+    }, {
+        key: 'backHome',
+        value: function backHome() {
+            var that = this;
+            $('#backhome').click(function (e) {
+                that.changeHash('');
+            });
+            that = null;
+        }
+
+        /**
+        * 修改头部返回按钮
+        * @param {*} isHome 
+        */
+
+    }, {
+        key: 'changeHeadeLeft',
+        value: function changeHeadeLeft() {
+            if (isHomePage) {
+                $('#header #windowback').css('display', 'none');
+                $('#header > button > i').removeClass('am-icon-chevron-left').addClass('am-icon-bars');
+            } else {
+                $('#header #windowback').css('display', 'block');
+                $('#header > button > i').removeClass('am-icon-bars').addClass('am-icon-chevron-left');
+            }
+        }
+        /**
+        * 关闭侧别栏
+        */
+
+    }, {
+        key: 'closeSidebar',
+        value: function closeSidebar() {
+            var silder = $('#sidebar');
+            silder.offCanvas('close');
+        }
+
+        /**
+        * 显示模块页面
+        * @param {*} pageName 
+        * @param {*} pageData 
+        */
+
+    }, {
+        key: 'setShowPage',
+        value: function setShowPage(pageName, pageData) {
+            contentNode.innerHTML = pageData;
+        }
+    }, {
+        key: 'hideTobar',
+
+
+        /**
+        * 是否隐藏轮播图
+        * @param {*} type 
+        */
+        value: function hideTobar(type) {
+            if (type === 'hide') {
+                $('#header').css('height', '8%');
+                $('#silderouter').css('display', 'none');
+            } else {
+                $('#silderouter').css('display', 'block').css('top', '8%');
+                $('#header').css('height', '53px');
+            }
+        }
+        /**
+         * 加载指定js文件
+         * @param {*} pageName 
+         */
+
+    }, {
+        key: 'loadPageScrpat',
+        value: function loadPageScrpat(pageName, sucCallback) {
+            $.getScript(window.location.origin + '/js/page/' + pageName + '.js', function () {
+                sucCallback();
+            });
+        }
+    }, {
+        key: 'loadingCss',
+
+
+        /**
+        * 动态加载css
+        * @param {*} pageName 
+        */
+        value: function loadingCss(pageName) {
+            $('head').children(':last').attr({
+                rel: window.location.origin + '/css/page/' + pageName,
+                type: 'text/css',
+                href: './style.css'
+            });
+        }
+    }, {
+        key: 'localStorage',
+
+
+        /**
+        * 是否缓存
+        * @param {*} key 
+        * @param {*} value 
+        */
+        value: function localStorage(key, value) {
+            if (window.localStorage) {
+                window.localStorage.setItem(key, value);
+            } else {
+                alert('不支持localStorage!');
+            }
+        }
+    }, {
+        key: 'clearLocalStorage',
+
+
+        /**
+        * 清除缓存
+        * @param {*} key 
+        */
+        value: function clearLocalStorage(key) {
+            if (key === 'localstorage') {
+                window.localStorage.clear();
+            } else {
+                window.localStorage.removeItem(key);
+            }
+        }
+    }, {
+        key: 'localPage',
+
+        /**
+         * 获取缓存的page
+         * @param {*} pageName 
+         */
+        value: function localPage(pageName) {
+            return window.localStorage.getItem(pageName);
+        }
+    }, {
+        key: 'readHTML',
+
+
+        /**
+         * 获取单个页面
+         * @param {*} sucCallback 
+         */
+        value: function readHTML(pageName, sucCallback) {
+            var that = this;
+            if (!inArray(pages, pageName)) {
+                return;
+            }
+            this.clearLocalStorage('localstorage');
+            var localPageData = this.localPage(pageName);
+            if (localPageData) {
+                this.setShowPage(pageName, localPageData);
+                return;
+            }
+            this.loadingDailog('show', '加载中...');
+            $.ajax({
+                async: false,
+                url: '/page/' + pageName + '.html',
+                success: function success(result) {
+                    that.loadingDailog('hide');
+                    //打开此处可加入单页面缓存(避免多次请求)
+                    //开发时 不建议打开缓存
+                    // this.localStorage(pageName, result);
+                    that.setShowPage(pageName, result);
+                    sucCallback(result);
+                    that.changePageTitle(pageName);
+                    that.loadPageScrpat(pageName, function () { });
+                    that = null;
+                },
+                error: function error(err) {
+                    that.loadingDailog('hide');
+                    console.log(err);
+                    that = null;
+                }
+            });
+        }
+    }, {
+        key: 'changePageTitle',
+
+        /**
+         * 修改主页title
+         * @param {*} title 
+         */
+        value: function changePageTitle(pageName) {
+            var i = pages.indexOf(pageName);
+            $('#pagetitle').text(pageTiles[i]);
+        }
+    }, {
+        key: 'showDialog',
+
+
+        /**
+         * 显示基础的对话框
+         * @param {*} title 
+         * @param {*} content 
+         * @param {*} sucCallback   确定之后的回调
+         */
+        value: function showDialog(title, content, sucCallback) {
+            var html = '<div class="am-modal am-modal-confirm" tabindex="-1" id="basedialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + title + '</div><div class="am-modal-bd">' + content + '</div><div class="am-modal-footer"><span class="am-modal-btn" data-am-modal-cancel>\u53D6\u6D88</span><span class="am-modal-btn" data-am-modal-confirm>\u786E\u5B9A</span></div></div></div>';
+            otherPlugNode.innerHTML = html;
+            $('#basedialog').modal({
+                relatedTarget: undefined,
+                onConfirm: function onConfirm() {
+                    sucCallback();
+                },
+                // closeOnConfirm: false,
+                onCancel: function onCancel() { }
+            });
+        }
+    }, {
+        key: 'loadingDailog',
+
+        /**
+         * 显示加载动画
+         * @param {*} type  如果为show 显示   其他隐藏 
+         * @param {*} content 显示的内容
+         */
+        value: function loadingDailog(type, content) {
+            if (type === 'show') {
+                var html = '<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="loaddialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + content + '</div><div class="am-modal-bd"><span class="am-icon-spinner am-icon-spin"></span></div></div></div>';
+                otherPlugNode.innerHTML = html;
+                $('#loaddialog').modal('toggle');
+            } else {
+                $('#loaddialog').modal('close');
+                otherPlugNode.innerHTML = '';
+            }
+        }
+    }, {
+        key: 'changeHash',
+
+
+        /**
+         * 修改页面hash
+         * @param {*} hash 
+         */
+        value: function changeHash(hash) {
+            window.location.href = window.location.origin + ('#' + hash);
+        }
+    }, {
+        key: 'uploadImg',
+
+
+        /**
+         * 上传图片的组件
+         * @param {*} view 对应的模块视图
+         * @param {*} number 图片最大数
+         * @param {*} callback 
+         */
+        value: function uploadImg(view, number, callback) {
+            var parentImgNode = document.createElement('div');
+            var html = '';
+            html += '<div class="am-form-group am-form-file"><button type="button" class="am-btn am-btn-danger am-btn-sm">\n        <i class="am-icon-cloud-upload"></i> \u9009\u62E9\u8981\u4E0A\u4F20\u7684\u6587\u4EF6</button>\n      <input id="uploadimg"  type="file" multiple></div><div id="file-list"></div>';
+            $(parentImgNode).html(html);
+            html = '';
+            view.append(parentImgNode);
+            view.find('#uploadimg').on('change', function () {
+                callback(this.files[0]);
+            });
+        }
+    }]);
+
+    return Base;
+}();
 
 window.onload = function () {
     BaseClass.startPage();
 };
-
-/**
- * 修改头部返回按钮
- * @param {*} isHome 
- */
-BaseClass.changeHeadeLeft = function () {
-    if (isHomePage) {
-        $('#header #windowback').css('display', 'none');
-        $('#header > button > i').removeClass('am-icon-chevron-left').addClass('am-icon-bars');
-    } else {
-        $('#header #windowback').css('display', 'block');
-        $('#header > button > i').removeClass('am-icon-bars').addClass('am-icon-chevron-left');
-    }
-};
-
-/**
- * 关闭侧别栏
- */
-BaseClass.closeSidebar = function () {
-    var silder = $('#sidebar');
-    silder.offCanvas('close');
+window.onhashchange = function () {
+    BaseClass.startPage();
 };
 //初始化页面
 function initPage() {
+    BaseClass = new Base();
     // $('#header').hide();
     BaseClass.silderTabClick();
 }
-
-/**
- * 显示模块页面
- * @param {*} pageName 
- * @param {*} pageData 
- */
-BaseClass.setShowPage = function (pageName, pageData) {
-    contentNode.innerHTML = pageData;
-};
-
-/**
- * 是否隐藏轮播图
- * @param {*} type 
- */
-BaseClass.hideTobar = function (type) {
-    if (type === 'hide') {
-        $('#header').css('height', '8%');
-        $('#silderouter').css('display', 'none');
-    } else {
-        $('#silderouter').css('display', 'block').css('top', '8%');
-        $('#header').css('height', '53px');
-    }
-};
 
 /**
  * 是否有譔页面
@@ -144,53 +369,6 @@ function inArray(array, pageName) {
     }
     return false;
 }
-
-/**
- * 加载指定js文件
- * @param {*} pageName 
- */
-BaseClass.loadPageScrpat = function (pageName, sucCallback) {
-    $.getScript(window.location.origin + '/js/page/' + pageName + '.js', function () {
-        sucCallback();
-    });
-};
-/**
- * 动态加载css
- * @param {*} pageName 
- */
-BaseClass.loadingCss = function (pageName) {
-    $('head').children(':last').attr({
-        rel: window.location.origin + '/css/page/' + pageName,
-        type: 'text/css',
-        href: './style.css'
-    });
-};
-
-/**
- * 是否缓存
- * @param {*} key 
- * @param {*} value 
- */
-BaseClass.localStorage = function (key, value) {
-    if (window.localStorage) {
-        window.localStorage.setItem(key, value);
-    } else {
-        alert('不支持localStorage!');
-    }
-};
-
-/**
- * 清除缓存
- * @param {*} key 
- */
-BaseClass.clearLocalStorage = function (key) {
-    if (key === 'localstorage') {
-        window.localStorage.clear();
-    } else {
-        window.localStorage.removeItem(key);
-    }
-};
-
 /**
  * 从数组中获取arr[key] == value 的所有数据 并生成新arr
  * @param {*} arr 
@@ -282,117 +460,6 @@ function postHttp(url, formData, sucCallback) {
     });
 }
 
-/**
- * 获取缓存的page
- * @param {*} pageName 
- */
-BaseClass.localPage = function (pageName) {
-    return window.localStorage.getItem(pageName);
-};
-
-/**
- * 获取单个页面
- * @param {*} sucCallback 
- */
-BaseClass.readHTML = function (pageName, sucCallback) {
-    if (!inArray(pages, pageName)) {
-        return;
-    }
-    BaseClass.clearLocalStorage('localstorage');
-    var localPageData = BaseClass.localPage(pageName);
-    if (localPageData) {
-        BaseClass.setShowPage(pageName, localPageData);
-        return;
-    }
-    BaseClass.loadingDailog('show', '加载中...');
-    $.ajax({
-        async: false,
-        url: '/page/' + pageName + '.html',
-        success: function success(result) {
-            BaseClass.loadingDailog('hide');
-            //打开此处可加入单页面缓存(避免多次请求)
-            //开发时 不建议打开缓存
-            // BaseClass.localStorage(pageName, result);
-            BaseClass.setShowPage(pageName, result);
-            sucCallback(result);
-            BaseClass.changePageTitle(pageName);
-            BaseClass.loadPageScrpat(pageName, function () {});
-        },
-        error: function error(err) {
-            BaseClass.loadingDailog('hide');
-            console.log(err);
-        }
-    });
-};
-/**
- * 修改主页title
- * @param {*} title 
- */
-BaseClass.changePageTitle = function (pageName) {
-    var i = pages.indexOf(pageName);
-    $('#pagetitle').text(pageTiles[i]);
-};
-
-/**
- * 显示基础的对话框
- * @param {*} title 
- * @param {*} content 
- * @param {*} sucCallback   确定之后的回调
- */
-BaseClass.showDialog = function (title, content, sucCallback) {
-    var html = '<div class="am-modal am-modal-confirm" tabindex="-1" id="basedialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + title + '</div><div class="am-modal-bd">' + content + '</div><div class="am-modal-footer"><span class="am-modal-btn" data-am-modal-cancel>\u53D6\u6D88</span><span class="am-modal-btn" data-am-modal-confirm>\u786E\u5B9A</span></div></div></div>';
-    otherPlugNode.innerHTML = html;
-    $('#basedialog').modal({
-        relatedTarget: undefined,
-        onConfirm: function onConfirm() {
-            sucCallback();
-        },
-        // closeOnConfirm: false,
-        onCancel: function onCancel() {}
-    });
-};
-/**
- * 显示加载动画
- * @param {*} type  如果为show 显示   其他隐藏 
- * @param {*} content 显示的内容
- */
-BaseClass.loadingDailog = function (type, content) {
-    if (type === 'show') {
-        var html = '<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="loaddialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + content + '</div><div class="am-modal-bd"><span class="am-icon-spinner am-icon-spin"></span></div></div></div>';
-        otherPlugNode.innerHTML = html;
-        $('#loaddialog').modal('toggle');
-    } else {
-        $('#loaddialog').modal('close');
-        otherPlugNode.innerHTML = '';
-    }
-};
-
-/**
- * 修改页面hash
- * @param {*} hash 
- */
-BaseClass.changeHash = function (hash) {
-    window.location.href = window.location.origin + ('#' + hash);
-};
-
-/**
- * 上传图片的组件
- * @param {*} view 
- * @param {*} number 
- * @param {*} callback 
- */
-BaseClass.uploadImg = function (view, number, callback) {
-    var parentImgNode = document.createElement('div');
-    var html = '';
-    html += '<div class="am-form-group am-form-file"><button type="button" class="am-btn am-btn-danger am-btn-sm">\n        <i class="am-icon-cloud-upload"></i> \u9009\u62E9\u8981\u4E0A\u4F20\u7684\u6587\u4EF6</button>\n      <input id="uploadimg"  type="file" multiple></div><div id="file-list"></div>';
-    $(parentImgNode).html(html);
-    html = '';
-    view.append(parentImgNode);
-    view.find('#uploadimg').on('change', function () {
-        callback(this.files[0]);
-    });
-};
-
 /*
 三个参数
 file：一个是文件(类型是图片格式)，
@@ -441,12 +508,13 @@ function canvasDataURL(path, obj, callback) {
         var base64 = canvas.toDataURL('image/jpeg', quality);
         // 回调函数返回base64的值
         callback(base64);
+        that = null;
     };
 }
 /**
  * 将以base64的图片url数据转换为Blob
  * @param urlData
- *            用url方式表示的base64图片数据
+ * 用url方式表示的base64图片数据
  */
 function convertBase64UrlToBlob(urlData) {
     var arr = urlData.split(','),
