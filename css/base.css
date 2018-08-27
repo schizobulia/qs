@@ -99,3 +99,10 @@ body{
     top: 0px;
     z-index: 100;
 }
+
+.uploadimgitem{
+    width: 30%;
+    height: 100px;
+    margin-left: 5px;
+    margin-top: 5px;
+}

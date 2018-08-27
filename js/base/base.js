@@ -1,9 +1,10 @@
 'use strict';
 
 //项目的基类
+
 var BaseClass = {};
 var pages = ['page1', 'page2']; //所有页面page的名称   在使用页面前请先此注册
-var pageTiles = ['页面1', '页面2'];
+var pageTiles = ['页面1', '组件的使用'];
 
 var baseUrl = '127.0.0.1:3000'; //api接口
 var contentNode = $('#content')[0]; //主内容
@@ -38,12 +39,12 @@ BaseClass.startPage = function () {
         isHomePage = false;
         BaseClass.closeSidebar();
         BaseClass.backHome();
-        BaseClass.readHTML(pageName, function (html) { });
+        BaseClass.readHTML(pageName, function (html) {});
     } else {
         isHomePage = true;
         $('#header').css('height', '53px');
         BaseClass.hideTobar('show');
-        BaseClass.readHTML(defaultPage, function (html) { });
+        BaseClass.readHTML(defaultPage, function (html) {});
     }
     BaseClass.changeHeadeLeft();
 };
@@ -51,8 +52,7 @@ BaseClass.startPage = function () {
 /**
  * 模块间通信
  */
-var HandlerModule = {
-};
+var HandlerModule = {};
 var user = {};
 //错误码
 var ErrorMsg = {
@@ -108,7 +108,6 @@ function initPage() {
     BaseClass.silderTabClick();
 }
 
-
 /**
  * 显示模块页面
  * @param {*} pageName 
@@ -163,9 +162,34 @@ BaseClass.loadingCss = function (pageName) {
     $('head').children(':last').attr({
         rel: window.location.origin + '/css/page/' + pageName,
         type: 'text/css',
-        href: './style.css',
+        href: './style.css'
     });
-}
+};
+
+/**
+ * 是否缓存
+ * @param {*} key 
+ * @param {*} value 
+ */
+BaseClass.localStorage = function (key, value) {
+    if (window.localStorage) {
+        window.localStorage.setItem(key, value);
+    } else {
+        alert('不支持localStorage!');
+    }
+};
+
+/**
+ * 清除缓存
+ * @param {*} key 
+ */
+BaseClass.clearLocalStorage = function (key) {
+    if (key === 'localstorage') {
+        window.localStorage.clear();
+    } else {
+        window.localStorage.removeItem(key);
+    }
+};
 
 /**
  * 从数组中获取arr[key] == value 的所有数据 并生成新arr
@@ -259,11 +283,25 @@ function postHttp(url, formData, sucCallback) {
 }
 
 /**
+ * 获取缓存的page
+ * @param {*} pageName 
+ */
+BaseClass.localPage = function (pageName) {
+    return window.localStorage.getItem(pageName);
+};
+
+/**
  * 获取单个页面
  * @param {*} sucCallback 
  */
 BaseClass.readHTML = function (pageName, sucCallback) {
     if (!inArray(pages, pageName)) {
+        return;
+    }
+    BaseClass.clearLocalStorage('localstorage');
+    var localPageData = BaseClass.localPage(pageName);
+    if (localPageData) {
+        BaseClass.setShowPage(pageName, localPageData);
         return;
     }
     BaseClass.loadingDailog('show', '加载中...');
@@ -272,10 +310,13 @@ BaseClass.readHTML = function (pageName, sucCallback) {
         url: '/page/' + pageName + '.html',
         success: function success(result) {
             BaseClass.loadingDailog('hide');
+            //打开此处可加入单页面缓存(避免多次请求)
+            //开发时 不建议打开缓存
+            // BaseClass.localStorage(pageName, result);
             BaseClass.setShowPage(pageName, result);
             sucCallback(result);
             BaseClass.changePageTitle(pageName);
-            BaseClass.loadPageScrpat(pageName, function () { });
+            BaseClass.loadPageScrpat(pageName, function () {});
         },
         error: function error(err) {
             BaseClass.loadingDailog('hide');
@@ -307,7 +348,7 @@ BaseClass.showDialog = function (title, content, sucCallback) {
             sucCallback();
         },
         // closeOnConfirm: false,
-        onCancel: function onCancel() { }
+        onCancel: function onCancel() {}
     });
 };
 /**
@@ -326,14 +367,30 @@ BaseClass.loadingDailog = function (type, content) {
     }
 };
 
-
-
 /**
  * 修改页面hash
  * @param {*} hash 
  */
 BaseClass.changeHash = function (hash) {
     window.location.href = window.location.origin + ('#' + hash);
+};
+
+/**
+ * 上传图片的组件
+ * @param {*} view 
+ * @param {*} number 
+ * @param {*} callback 
+ */
+BaseClass.uploadImg = function (view, number, callback) {
+    var parentImgNode = document.createElement('div');
+    var html = '';
+    html += '<div class="am-form-group am-form-file"><button type="button" class="am-btn am-btn-danger am-btn-sm">\n        <i class="am-icon-cloud-upload"></i> \u9009\u62E9\u8981\u4E0A\u4F20\u7684\u6587\u4EF6</button>\n      <input id="uploadimg"  type="file" multiple></div><div id="file-list"></div>';
+    $(parentImgNode).html(html);
+    html = '';
+    view.append(parentImgNode);
+    view.find('#uploadimg').on('change', function () {
+        callback(this.files[0]);
+    });
 };
 
 /*
@@ -409,8 +466,7 @@ function convertBase64UrlToBlob(urlData) {
  * @param {*} imgNode 
  * @param {*} callback 
  */
-function showImageByBase64(that, imgNode, callback) {
-    var file = that.files[0];
+function showImageByBase64(file, imgNode, callback) {
     var fr = new FileReader();
     fr.readAsDataURL(file);
     fr.onloadend = function (e) {
@@ -419,9 +475,8 @@ function showImageByBase64(that, imgNode, callback) {
             quality: 0.2
         }, function (base64Codes) {
             //这里bl 为文件对象
-            // var formData = new FormData();
-            // var bl = convertBase64UrlToBlob(base64Codes);
-            callback(base64Codes);
+            var bl = convertBase64UrlToBlob(base64Codes);
+            callback(bl);
         });
     };
 }
