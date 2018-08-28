@@ -1,10 +1,10 @@
 'use strict';
 
 //page2
+
 (function () {
     var view = $('#page2page');
     var bbsData = null;
-    console.log('page2');
     // BaseClass.hideTobar('hide');
 
     /**
@@ -13,9 +13,10 @@
      */
     var imgs = [];
     var numbers = 2;
-    BaseClass.uploadImg(view, numbers, function (file) {
+    var pNode = view.find('#componentupload');
+    BaseClass.Component.uploadImg(pNode, numbers, function (file) {
         if (imgs.length >= numbers) {
-            alert('\u6700\u591A\u53EA\u80FD\u4E0A\u4F20' + numbers + '\u5F20\u56FE\u7247.');
+            BaseClass.Component.toast('\u6700\u591A\u53EA\u80FD\u4E0A\u4F20' + numbers + '\u5F20\u56FE\u7247.');
             return;
         }
         var uid = new Date().getTime();
@@ -23,20 +24,32 @@
         $(imgNode).addClass('uploadimgitem').attr('uid', uid);
         showImageByBase64(file, $(imgNode), function (blob) {
             imgs.push({ file: blob, id: uid });
-            view.find('#file-list').append(imgNode);
+            pNode.find('#file-list').append(imgNode);
             $(imgNode).click(function (e) {
                 var that = this;
                 var imguid = $(e.target).attr('uid');
                 imgs.map(function (element, index) {
                     if (element.id == uid) {
                         imgs.splice(index, 1);
-                        view.find('#file-list')[0].removeChild(that);
+                        pNode.find('#file-list')[0].removeChild(that);
                     }
                 });
             });
         });
     });
+
     /**
+     * 接收Page1发送的消息
      * =============
      */
+    var handleData = BaseClass.getPageHandler('page2');
+    console.log(handleData);
+    /**
+     * 提示信息
+     * =============
+     */
+    view.find('#toast').click(function (e) {
+        // BaseClass.Component.toast('内容', 'warning', 1000);
+        BaseClass.Component.toast('内容');
+    });
 })();

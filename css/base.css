@@ -91,7 +91,12 @@ body{
     height: 100%;
 }
 
+
 /* dialog */
+
+#otherplug{
+    display: none;
+}
 #otherplug #loading{
     position: absolute;
     width: 100%;
@@ -99,7 +104,17 @@ body{
     top: 0px;
     z-index: 100;
 }
-
+#otherplug > span.toast{
+    width: 80%;
+    position: absolute;
+    left: 10%;
+    top: 10%;
+    height: 30px;
+    font-size: 15px;
+    line-height: 24px;
+    border-radius: 5px;
+    z-index: 1000;
+}
 .uploadimgitem{
     width: 30%;
     height: 100px;

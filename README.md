@@ -46,7 +46,10 @@
     - 模块间的跳转
 
     ```javascript
-        BaseClass.changeHash('模块名称')
+        BaseClass.changeHash('模块名称', '需要发送的消息');
+        
+        //接收发送的消息
+        var handleData = BaseClass.getPageHandler('当前模块名称');
     ```
 
 
@@ -58,6 +61,8 @@
     - module中的代码为动态加载  
     - base.css中包含了所有的style, 如果觉得不方便也可以使用动态加载css, 方法为:
     <img src="./doc/loadingcss.png"/>
+
+    - 在页面跳转时请不要使用a标签
 
 5. ### 常用组件
     注:所有组件在[page2](https://github.com/schizobulia/qs/blob/master/js/page/page2.js)中有具体的使用代码

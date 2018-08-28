@@ -18,7 +18,7 @@ var isHomePage = true; //用户是否在主页
 /**
  * 模块间通信
  */
-var HandlerModule = {};
+var HandlerModule = [];
 var user = {};
 //错误码
 var ErrorMsg = {
@@ -32,6 +32,9 @@ var ErrorMsg = {
     9: '任务已提交,无法再次提交',
     13: '查无此任务'
 };
+/**
+ * 项目基类
+ */
 
 var Base = function () {
     function Base() {
@@ -48,10 +51,7 @@ var Base = function () {
             var that = this;
             $('#sidebarlist').click(function (e) {
                 var pageName = $(e.target).attr('uid');
-                if (inArray(pages, pageName)) {
-                    that.changeHash(pageName);
-                }
-                that = null;
+                that.changeHash(pageName);
             });
             $('#windowback').click(function (e) {
                 window.history.back();
@@ -72,12 +72,12 @@ var Base = function () {
                 isHomePage = false;
                 this.closeSidebar();
                 this.backHome();
-                this.readHTML(pageName, function (html) { });
+                this.readHTML(pageName, function (html) {});
             } else {
                 isHomePage = true;
                 $('#header').css('height', '53px');
                 this.hideTobar('show');
-                this.readHTML(defaultPage, function (html) { });
+                this.readHTML(defaultPage, function (html) {});
             }
             this.changeHeadeLeft();
         }
@@ -88,7 +88,6 @@ var Base = function () {
             $('#backhome').click(function (e) {
                 that.changeHash('');
             });
-            that = null;
         }
 
         /**
@@ -186,7 +185,7 @@ var Base = function () {
             if (window.localStorage) {
                 window.localStorage.setItem(key, value);
             } else {
-                alert('不支持localStorage!');
+                this.Component.toast('不支持localStorage!');
             }
         }
     }, {
@@ -205,14 +204,14 @@ var Base = function () {
             }
         }
     }, {
-        key: 'localPage',
+        key: 'getLocalStorage',
 
         /**
          * 获取缓存的page
-         * @param {*} pageName 
+         * @param {*} key 
          */
-        value: function localPage(pageName) {
-            return window.localStorage.getItem(pageName);
+        value: function getLocalStorage(key) {
+            return window.localStorage.getItem(key);
         }
     }, {
         key: 'readHTML',
@@ -227,8 +226,7 @@ var Base = function () {
             if (!inArray(pages, pageName)) {
                 return;
             }
-            this.clearLocalStorage('localstorage');
-            var localPageData = this.localPage(pageName);
+            var localPageData = this.getLocalStorage(pageName);
             if (localPageData) {
                 this.setShowPage(pageName, localPageData);
                 return;
@@ -245,13 +243,11 @@ var Base = function () {
                     that.setShowPage(pageName, result);
                     sucCallback(result);
                     that.changePageTitle(pageName);
-                    that.loadPageScrpat(pageName, function () { });
-                    that = null;
+                    that.loadPageScrpat(pageName, function () {});
                 },
                 error: function error(err) {
                     that.loadingDailog('hide');
                     console.log(err);
-                    that = null;
                 }
             });
         }
@@ -279,13 +275,14 @@ var Base = function () {
         value: function showDialog(title, content, sucCallback) {
             var html = '<div class="am-modal am-modal-confirm" tabindex="-1" id="basedialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + title + '</div><div class="am-modal-bd">' + content + '</div><div class="am-modal-footer"><span class="am-modal-btn" data-am-modal-cancel>\u53D6\u6D88</span><span class="am-modal-btn" data-am-modal-confirm>\u786E\u5B9A</span></div></div></div>';
             otherPlugNode.innerHTML = html;
+            $(otherPlugNode).show();
             $('#basedialog').modal({
                 relatedTarget: undefined,
                 onConfirm: function onConfirm() {
                     sucCallback();
                 },
                 // closeOnConfirm: false,
-                onCancel: function onCancel() { }
+                onCancel: function onCancel() {}
             });
         }
     }, {
@@ -300,9 +297,11 @@ var Base = function () {
             if (type === 'show') {
                 var html = '<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="loaddialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + content + '</div><div class="am-modal-bd"><span class="am-icon-spinner am-icon-spin"></span></div></div></div>';
                 otherPlugNode.innerHTML = html;
+                $(otherPlugNode).show();
                 $('#loaddialog').modal('toggle');
             } else {
                 $('#loaddialog').modal('close');
+                $(otherPlugNode).hide();
                 otherPlugNode.innerHTML = '';
             }
         }
@@ -314,46 +313,176 @@ var Base = function () {
          * 修改页面hash
          * @param {*} hash 
          */
-        value: function changeHash(hash) {
+        value: function changeHash(hash, data) {
+            if (!inArray(pages, hash)) {
+                this.Component.toast('该页面未注册...');
+                return;
+            }
+            this.setPageHandler(hash, data);
             window.location.href = window.location.origin + ('#' + hash);
         }
     }, {
-        key: 'uploadImg',
+        key: 'getPageHandler',
 
 
         /**
-         * 上传图片的组件
-         * @param {*} view 对应的模块视图
-         * @param {*} number 图片最大数
-         * @param {*} callback 
+         *根据pageName获取页面信息
+         *@param {*} pageName 
          */
-        value: function uploadImg(view, number, callback) {
-            var parentImgNode = document.createElement('div');
-            var html = '';
-            html += '<div class="am-form-group am-form-file"><button type="button" class="am-btn am-btn-danger am-btn-sm">\n        <i class="am-icon-cloud-upload"></i> \u9009\u62E9\u8981\u4E0A\u4F20\u7684\u6587\u4EF6</button>\n      <input id="uploadimg"  type="file" multiple></div><div id="file-list"></div>';
-            $(parentImgNode).html(html);
-            html = '';
-            view.append(parentImgNode);
-            view.find('#uploadimg').on('change', function () {
-                callback(this.files[0]);
+        value: function getPageHandler(pageName) {
+            var index = HandlerModule.findIndex(function (element) {
+                return element.key === pageName;
             });
+            var data = HandlerModule[index];
+            index = 0;
+            return data;
+        }
+    }, {
+        key: 'setPageHandler',
+
+        /**
+         * 设置要传递页面的信息
+         * @param {*} pageName  
+         * @param {*} data  数据(仅仅支持String) 
+         */
+        value: function setPageHandler(pageName, data) {
+            if ('#' + pageName === window.location.hash) {
+                this.Component.toast('无法在同一页面进行通信!');
+                return;
+            }
+            var index = HandlerModule.findIndex(function (element) {
+                return element.key === pageName;
+            });
+
+            if (index >= 0) {
+                if (data === undefined) {
+                    HandlerModule.splice(index, 1);
+                } else {
+                    HandlerModule[index].data = data;
+                }
+            } else {
+                HandlerModule.push({ key: pageName, data: data });
+            }
+            index = null;
+        }
+        /**
+         * 页面刷新时保存 HandlerModule
+         */
+
+    }, {
+        key: 'refreshHandler',
+        value: function refreshHandler() {
+            if (HandlerModule.length > 0) {
+                this.localStorage('handler', JSON.stringify(HandlerModule));
+            }
+        }
+        /**
+         * 解决页面刷新handler清除的问题
+         */
+
+    }, {
+        key: 'getLocalHandler',
+        value: function getLocalHandler() {
+            var data = this.getLocalStorage('handler');
+            if (data) {
+                HandlerModule = JSON.parse(data);
+                this.clearLocalStorage('handler');
+            }
         }
     }]);
 
     return Base;
 }();
 
+/**
+ * 组件类
+ * 在真实项目使用时如果不使用该类 可以删除
+ * 或者如果觉得该文件过大  可以放到别的文件中
+ */
+
+
+var Component = function () {
+    function Component() {
+        _classCallCheck(this, Component);
+    }
+
+    _createClass(Component, [{
+        key: 'uploadImg',
+
+        /**
+         * 上传图片的组件
+         * @param {*} pNode  父节点
+         * @param {*} number 数量
+         * @param {*} callback 
+         */
+        value: function uploadImg(pNode, number, callback) {
+            var parentImgNode = document.createElement('div');
+            var html = '';
+            html += '<div class="am-form-group am-form-file"><button type="button" class="am-btn am-btn-danger am-btn-sm">\n        <i class="am-icon-cloud-upload"></i> \u9009\u62E9\u8981\u4E0A\u4F20\u7684\u6587\u4EF6</button>\n      <input id="uploadimg"  type="file" multiple></div><div id="file-list"></div>';
+            $(parentImgNode).html(html);
+            html = '';
+            pNode.append(parentImgNode);
+            pNode.find('#uploadimg').on('change', function () {
+                callback(this.files[0]);
+            });
+        }
+    }, {
+        key: 'toast',
+
+        /**
+         * 提示信息
+         * @param {*} content 
+         * @param {*} type [primary, secondary, success, warning, danger, success]
+         * @param {*} time 
+         */
+        value: function toast(content, type, time) {
+            var node = $('#otherplug');
+            $(otherPlugNode).html('\n        <span class="toast am-badge am-badge-' + (type || 'warning') + '">' + content + '</span>').show();
+            $(otherPlugNode).fadeIn(500, function () {
+                var thread = setTimeout(function () {
+                    $(otherPlugNode).html('').hide();
+                    clearTimeout(thread);
+                }, time || 1000);
+            });
+        }
+    }]);
+
+    return Component;
+}();
+
 window.onload = function () {
+    BaseClass.getLocalHandler();
     BaseClass.startPage();
 };
 window.onhashchange = function () {
     BaseClass.startPage();
 };
+
+window.onbeforeunload = function () {
+    BaseClass.refreshHandler();
+};
+
 //初始化页面
 function initPage() {
     BaseClass = new Base();
+    BaseClass.Component = new Component();
     // $('#header').hide();
     BaseClass.silderTabClick();
+}
+
+function destory() {
+    BaseClass.clearLocalStorage('localstorage');
+    pages = null;
+    pageTiles = null;
+    BaseClass = null;
+    baseUrl = null;
+    contentNode = null;
+    otherPlugNode = null;
+    commentsNode = null;
+    defaultPage = null;
+    isHomePage = null;
+    HandlerModule = null;
+    ErrorMsg = null;
 }
 
 /**
@@ -398,7 +527,7 @@ function isAjaxNull() {
     for (var index = 0; index < array.length; index++) {
         var element = array[index];
         if (element === 'undefined' || !element || element === '') {
-            alert('输入不能为空!');
+            BaseClass.Component.toast('输入不能为空!');
             return false;
         }
     }
@@ -423,14 +552,14 @@ function httpGet(ajaxData, sucCallback) {
             if (parseInt(msg.code) == 1) {
                 sucCallback(msg);
             } else {
-                alert(ErrorMsg[msg.code]);
+                BaseClass.Component.toast(ErrorMsg[msg.code]);
             }
             BaseClass.loadingDailog('hide');
         },
         error: function error(err) {
             console.log(err);
             BaseClass.loadingDailog('hide');
-            alert('服务器异常, 请刷新重试!');
+            BaseClass.Component.toast('服务器异常, 请刷新重试!');
         }
     });
 }
@@ -448,14 +577,14 @@ function postHttp(url, formData, sucCallback) {
             if (parseInt(data.code) === 1) {
                 sucCallback(data);
             } else {
-                alert(ErrorMsg[data.code]);
+                BaseClass.Component.toast(ErrorMsg[data.code]);
             }
             BaseClass.loadingDailog('hide');
         },
         error: function error(responseStr) {
             console.error(responseStr);
             BaseClass.loadingDailog('hide');
-            alert('网络异常,请刷新界面重试!');
+            BaseClass.Component.toast('网络异常,请刷新界面重试!');
         }
     });
 }
@@ -508,13 +637,12 @@ function canvasDataURL(path, obj, callback) {
         var base64 = canvas.toDataURL('image/jpeg', quality);
         // 回调函数返回base64的值
         callback(base64);
-        that = null;
     };
 }
 /**
  * 将以base64的图片url数据转换为Blob
  * @param urlData
- * 用url方式表示的base64图片数据
+ *            用url方式表示的base64图片数据
  */
 function convertBase64UrlToBlob(urlData) {
     var arr = urlData.split(','),
