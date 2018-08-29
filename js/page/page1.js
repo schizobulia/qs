@@ -2,6 +2,7 @@
 
 //论坛
 (function () {
+    let a = 's';
     var view = $('#bbspage');
     var bbsData = null;
     // BaseClass.hideTobar('hide');

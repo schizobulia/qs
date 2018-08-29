@@ -1,27 +1,22 @@
-'use strict';
-
 //项目的基类
+let development = false;  //是否为线上版
+let pages = ['page1', 'page2']; //所有页面page的名称   在使用页面前请先此注册
+let pageTiles = ['页面1', '组件的使用'];
+let BaseClass = null;
+let baseUrl = '127.0.0.1:3000'; //api接口
+let contentNode = $('#content')[0]; //主内容
+let otherPlugNode = $('#otherplug')[0]; //对话框之类
+let commentsNode = $('#comments'); //评论模块的父node
+let defaultPage = pages[0]; //默认显示主页
+let isHomePage = true; //用户是否在主页
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var pages = ['page1', 'page2']; //所有页面page的名称   在使用页面前请先此注册
-var pageTiles = ['页面1', '组件的使用'];
-var BaseClass = null;
-var baseUrl = '127.0.0.1:3000'; //api接口
-var contentNode = $('#content')[0]; //主内容
-var otherPlugNode = $('#otherplug')[0]; //对话框之类
-var commentsNode = $('#comments'); //评论模块的父node
-var defaultPage = pages[0]; //默认显示主页
-var isHomePage = true; //用户是否在主页
 /**
  * 模块间通信
  */
-var HandlerModule = [];
-var user = {};
+let HandlerModule = [];
+let user = {};
 //错误码
-var ErrorMsg = {
+let ErrorMsg = {
     0: '失败',
     100: '内容长度不能超过100',
     12: '内容长度不能超过12',
@@ -35,420 +30,337 @@ var ErrorMsg = {
 /**
  * 项目基类
  */
-
-var Base = function () {
-    function Base() {
-        _classCallCheck(this, Base);
+class Base {
+    /**
+    * 侧别栏的单击跳转事件
+    */
+    silderTabClick() {
+        $('#sidebarlist').click((e) => {
+            let pageName = $(e.target).attr('uid');
+            this.changeHash(pageName);
+        });
+        $('#windowback').click((e) => {
+            window.history.back();
+        });
     }
 
-    _createClass(Base, [{
-        key: 'silderTabClick',
-
-        /**
-        * 侧别栏的单击跳转事件
-        */
-        value: function silderTabClick() {
-            var that = this;
-            $('#sidebarlist').click(function (e) {
-                var pageName = $(e.target).attr('uid');
-                that.changeHash(pageName);
-            });
-            $('#windowback').click(function (e) {
-                window.history.back();
-            });
+    /**
+    * 跳转页面
+    * @param {*} params 
+    */
+    startPage() {
+        let pageName = window.location.hash;
+        pageName = pageName.slice(1, pageName.length);
+        if (inArray(pages, pageName)) {
+            isHomePage = false;
+            this.closeSidebar();
+            this.backHome();
+            this.readHTML(pageName, function (html) { });
+        } else {
+            isHomePage = true;
+            $('#header').css('height', '53px');
+            this.hideTobar('show');
+            this.readHTML(defaultPage, function (html) { });
         }
+        this.changeHeadeLeft();
+    }
 
-        /**
-        * 跳转页面
-        * @param {*} params 
-        */
+    backHome() {
+        $('#backhome').click((e) => {
+            this.changeHash('');
+        });
+    }
 
-    }, {
-        key: 'startPage',
-        value: function startPage() {
-            var pageName = window.location.hash;
-            pageName = pageName.slice(1, pageName.length);
-            if (inArray(pages, pageName)) {
-                isHomePage = false;
-                this.closeSidebar();
-                this.backHome();
-                this.readHTML(pageName, function (html) {});
-            } else {
-                isHomePage = true;
-                $('#header').css('height', '53px');
-                this.hideTobar('show');
-                this.readHTML(defaultPage, function (html) {});
-            }
-            this.changeHeadeLeft();
+    /**
+    * 修改头部返回按钮
+    * @param {*} isHome 
+    */
+    changeHeadeLeft() {
+        if (isHomePage) {
+            $('#header #windowback').css('display', 'none');
+            $('#header > button > i').removeClass('am-icon-chevron-left').addClass('am-icon-bars');
+        } else {
+            $('#header #windowback').css('display', 'block');
+            $('#header > button > i').removeClass('am-icon-bars').addClass('am-icon-chevron-left');
         }
-    }, {
-        key: 'backHome',
-        value: function backHome() {
-            var that = this;
-            $('#backhome').click(function (e) {
-                that.changeHash('');
-            });
+    }
+    /**
+    * 关闭侧别栏
+    */
+    closeSidebar() {
+        let silder = $('#sidebar');
+        silder.offCanvas('close');
+    }
+
+    /**
+    * 显示模块页面
+    * @param {*} pageName 
+    * @param {*} pageData 
+    */
+    setShowPage(pageName, pageData) {
+        contentNode.innerHTML = pageData;
+    };
+
+    /**
+    * 是否隐藏轮播图
+    * @param {*} type 
+    */
+    hideTobar(type) {
+        if (type === 'hide') {
+            $('#header').css('height', '8%');
+            $('#silderouter').css('display', 'none');
+        } else {
+            $('#silderouter').css('display', 'block').css('top', '8%');
+            $('#header').css('height', '53px');
         }
+    }
+    /**
+     * 加载指定js文件
+     * @param {*} pageName 
+     */
+    loadPageScrpat(pageName, sucCallback) {
+        $.getScript(window.location.origin + `/js/page/` + pageName + '.js', function () {
+            sucCallback();
+        });
+    };
 
-        /**
-        * 修改头部返回按钮
-        * @param {*} isHome 
-        */
+    /**
+    * 动态加载css
+    * @param {*} pageName 
+    */
+    loadingCss(pageName) {
+        $('head').children(':last').attr({
+            rel: window.location.origin + '/css/page/' + pageName,
+            type: 'text/css',
+            href: './style.css'
+        });
+    };
 
-    }, {
-        key: 'changeHeadeLeft',
-        value: function changeHeadeLeft() {
-            if (isHomePage) {
-                $('#header #windowback').css('display', 'none');
-                $('#header > button > i').removeClass('am-icon-chevron-left').addClass('am-icon-bars');
-            } else {
-                $('#header #windowback').css('display', 'block');
-                $('#header > button > i').removeClass('am-icon-bars').addClass('am-icon-chevron-left');
-            }
+    /**
+    * 是否缓存
+    * @param {*} key 
+    * @param {*} value 
+    */
+    localStorage(key, value) {
+        if (window.localStorage) {
+            window.localStorage.setItem(key, value);
+        } else {
+            this.Component.toast('不支持localStorage!');
         }
-        /**
-        * 关闭侧别栏
-        */
+    };
 
-    }, {
-        key: 'closeSidebar',
-        value: function closeSidebar() {
-            var silder = $('#sidebar');
-            silder.offCanvas('close');
+    /**
+    * 清除缓存
+    * @param {*} key 
+    */
+    clearLocalStorage(key) {
+        if (key === 'localstorage') {
+            window.localStorage.clear();
+        } else {
+            window.localStorage.removeItem(key);
         }
+    };
+    /**
+     * 获取缓存的page
+     * @param {*} key 
+     */
+    getLocalStorage(key) {
+        return window.localStorage.getItem(key);
+    };
 
-        /**
-        * 显示模块页面
-        * @param {*} pageName 
-        * @param {*} pageData 
-        */
-
-    }, {
-        key: 'setShowPage',
-        value: function setShowPage(pageName, pageData) {
-            contentNode.innerHTML = pageData;
+    /**
+     * 获取单个页面
+     * @param {*} sucCallback 
+     */
+    readHTML(pageName, sucCallback) {
+        let that = this;
+        if (!inArray(pages, pageName)) {
+            return;
         }
-    }, {
-        key: 'hideTobar',
-
-
-        /**
-        * 是否隐藏轮播图
-        * @param {*} type 
-        */
-        value: function hideTobar(type) {
-            if (type === 'hide') {
-                $('#header').css('height', '8%');
-                $('#silderouter').css('display', 'none');
-            } else {
-                $('#silderouter').css('display', 'block').css('top', '8%');
-                $('#header').css('height', '53px');
-            }
+        let localPageData = this.getLocalStorage(pageName);
+        if (localPageData) {
+            this.setShowPage(pageName, localPageData);
+            return;
         }
-        /**
-         * 加载指定js文件
-         * @param {*} pageName 
-         */
-
-    }, {
-        key: 'loadPageScrpat',
-        value: function loadPageScrpat(pageName, sucCallback) {
-            $.getScript(window.location.origin + '/js/page/' + pageName + '.js', function () {
-                sucCallback();
-            });
-        }
-    }, {
-        key: 'loadingCss',
-
-
-        /**
-        * 动态加载css
-        * @param {*} pageName 
-        */
-        value: function loadingCss(pageName) {
-            $('head').children(':last').attr({
-                rel: window.location.origin + '/css/page/' + pageName,
-                type: 'text/css',
-                href: './style.css'
-            });
-        }
-    }, {
-        key: 'localStorage',
-
-
-        /**
-        * 是否缓存
-        * @param {*} key 
-        * @param {*} value 
-        */
-        value: function localStorage(key, value) {
-            if (window.localStorage) {
-                window.localStorage.setItem(key, value);
-            } else {
-                this.Component.toast('不支持localStorage!');
-            }
-        }
-    }, {
-        key: 'clearLocalStorage',
-
-
-        /**
-        * 清除缓存
-        * @param {*} key 
-        */
-        value: function clearLocalStorage(key) {
-            if (key === 'localstorage') {
-                window.localStorage.clear();
-            } else {
-                window.localStorage.removeItem(key);
-            }
-        }
-    }, {
-        key: 'getLocalStorage',
-
-        /**
-         * 获取缓存的page
-         * @param {*} key 
-         */
-        value: function getLocalStorage(key) {
-            return window.localStorage.getItem(key);
-        }
-    }, {
-        key: 'readHTML',
-
-
-        /**
-         * 获取单个页面
-         * @param {*} sucCallback 
-         */
-        value: function readHTML(pageName, sucCallback) {
-            var that = this;
-            if (!inArray(pages, pageName)) {
-                return;
-            }
-            var localPageData = this.getLocalStorage(pageName);
-            if (localPageData) {
-                this.setShowPage(pageName, localPageData);
-                return;
-            }
-            this.loadingDailog('show', '加载中...');
-            $.ajax({
-                async: false,
-                url: '/page/' + pageName + '.html',
-                success: function success(result) {
-                    that.loadingDailog('hide');
-                    //打开此处可加入单页面缓存(避免多次请求)
-                    //开发时 不建议打开缓存
-                    // this.localStorage(pageName, result);
-                    that.setShowPage(pageName, result);
-                    sucCallback(result);
-                    that.changePageTitle(pageName);
-                    that.loadPageScrpat(pageName, function () {});
-                },
-                error: function error(err) {
-                    that.loadingDailog('hide');
-                    console.log(err);
+        this.loadingDailog('show', '加载中...');
+        $.ajax({
+            async: false,
+            url: '/page/' + pageName + '.html',
+            success: function success(result) {
+                that.loadingDailog('hide');
+                //打开此处可加入单页面缓存(避免多次请求)
+                //开发时 不建议打开缓存
+                if (development) {
+                    that.localStorage(pageName, result);
                 }
-            });
-        }
-    }, {
-        key: 'changePageTitle',
+                that.setShowPage(pageName, result);
+                sucCallback(result);
+                that.changePageTitle(pageName);
+                that.loadPageScrpat(pageName, function () { });
+            },
+            error: function error(err) {
+                that.loadingDailog('hide');
+                console.log(err);
+            }
+        });
+    };
+    /**
+     * 修改主页title
+     * @param {*} title 
+     */
+    changePageTitle(pageName) {
+        let i = pages.indexOf(pageName);
+        $('#pagetitle').text(pageTiles[i]);
+    };
 
-        /**
-         * 修改主页title
-         * @param {*} title 
-         */
-        value: function changePageTitle(pageName) {
-            var i = pages.indexOf(pageName);
-            $('#pagetitle').text(pageTiles[i]);
-        }
-    }, {
-        key: 'showDialog',
-
-
-        /**
-         * 显示基础的对话框
-         * @param {*} title 
-         * @param {*} content 
-         * @param {*} sucCallback   确定之后的回调
-         */
-        value: function showDialog(title, content, sucCallback) {
-            var html = '<div class="am-modal am-modal-confirm" tabindex="-1" id="basedialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + title + '</div><div class="am-modal-bd">' + content + '</div><div class="am-modal-footer"><span class="am-modal-btn" data-am-modal-cancel>\u53D6\u6D88</span><span class="am-modal-btn" data-am-modal-confirm>\u786E\u5B9A</span></div></div></div>';
+    /**
+     * 显示基础的对话框
+     * @param {*} title 
+     * @param {*} content 
+     * @param {*} sucCallback   确定之后的回调
+     */
+    showDialog(title, content, sucCallback) {
+        let html = '<div class="am-modal am-modal-confirm" tabindex="-1" id="basedialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + title + '</div><div class="am-modal-bd">' + content + '</div><div class="am-modal-footer"><span class="am-modal-btn" data-am-modal-cancel>\u53D6\u6D88</span><span class="am-modal-btn" data-am-modal-confirm>\u786E\u5B9A</span></div></div></div>';
+        otherPlugNode.innerHTML = html;
+        $(otherPlugNode).show();
+        $('#basedialog').modal({
+            relatedTarget: undefined,
+            onConfirm: function onConfirm() {
+                sucCallback();
+            },
+            // closeOnConfirm: false,
+            onCancel: function onCancel() { }
+        });
+    };
+    /**
+     * 显示加载动画
+     * @param {*} type  如果为show 显示   其他隐藏 
+     * @param {*} content 显示的内容
+     */
+    loadingDailog(type, content) {
+        if (type === 'show') {
+            let html = '<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="loaddialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + content + '</div><div class="am-modal-bd"><span class="am-icon-spinner am-icon-spin"></span></div></div></div>';
             otherPlugNode.innerHTML = html;
             $(otherPlugNode).show();
-            $('#basedialog').modal({
-                relatedTarget: undefined,
-                onConfirm: function onConfirm() {
-                    sucCallback();
-                },
-                // closeOnConfirm: false,
-                onCancel: function onCancel() {}
-            });
+            $('#loaddialog').modal('toggle');
+        } else {
+            $('#loaddialog').modal('close');
+            $(otherPlugNode).hide();
+            otherPlugNode.innerHTML = '';
         }
-    }, {
-        key: 'loadingDailog',
+    };
 
-        /**
-         * 显示加载动画
-         * @param {*} type  如果为show 显示   其他隐藏 
-         * @param {*} content 显示的内容
-         */
-        value: function loadingDailog(type, content) {
-            if (type === 'show') {
-                var html = '<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="loaddialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + content + '</div><div class="am-modal-bd"><span class="am-icon-spinner am-icon-spin"></span></div></div></div>';
-                otherPlugNode.innerHTML = html;
-                $(otherPlugNode).show();
-                $('#loaddialog').modal('toggle');
+    /**
+     * 修改页面hash
+     * @param {*} hash 
+     */
+    changeHash(hash, data) {
+        this.setPageHandler(hash, data);
+        window.location.href = window.location.origin + ('#' + hash);
+    };
+
+    /**
+     *根据pageName获取页面信息
+     *@param {*} pageName 
+     */
+    getPageHandler(pageName) {
+        let index = HandlerModule.findIndex((element) => {
+            return element.key === pageName;
+        });
+        let data = HandlerModule[index];
+        index = 0;
+        return data;
+    };
+    /**
+     * 设置要传递页面的信息
+     * @param {*} pageName  
+     * @param {*} data  数据(仅仅支持String) 
+     */
+    setPageHandler(pageName, data) {
+        if ('#' + pageName === window.location.hash) {
+            this.Component.toast('无法在同一页面进行通信!');
+            return;
+        }
+        let index = HandlerModule.findIndex((element) => {
+            return element.key === pageName;
+        });
+
+        if (index >= 0) {
+            if (data === undefined) {
+                HandlerModule.splice(index, 1);
             } else {
-                $('#loaddialog').modal('close');
-                $(otherPlugNode).hide();
-                otherPlugNode.innerHTML = '';
+                HandlerModule[index].data = data;
             }
+        } else {
+            HandlerModule.push({ key: pageName, data: data });
         }
-    }, {
-        key: 'changeHash',
-
-
-        /**
-         * 修改页面hash
-         * @param {*} hash 
-         */
-        value: function changeHash(hash, data) {
-            if (!inArray(pages, hash)) {
-                this.Component.toast('该页面未注册...');
-                return;
-            }
-            this.setPageHandler(hash, data);
-            window.location.href = window.location.origin + ('#' + hash);
+        index = null;
+    }
+    /**
+     * 页面刷新时保存 HandlerModule
+     */
+    refreshHandler() {
+        if (HandlerModule.length > 0) {
+            this.localStorage('handler', JSON.stringify(HandlerModule));
         }
-    }, {
-        key: 'getPageHandler',
-
-
-        /**
-         *根据pageName获取页面信息
-         *@param {*} pageName 
-         */
-        value: function getPageHandler(pageName) {
-            var index = HandlerModule.findIndex(function (element) {
-                return element.key === pageName;
-            });
-            var data = HandlerModule[index];
-            index = 0;
-            return data;
+    }
+    /**
+     * 解决页面刷新handler清除的问题
+     */
+    getLocalHandler() {
+        let data = this.getLocalStorage('handler');
+        if (data) {
+            HandlerModule = JSON.parse(data);
+            this.clearLocalStorage('handler');
         }
-    }, {
-        key: 'setPageHandler',
+    }
 
-        /**
-         * 设置要传递页面的信息
-         * @param {*} pageName  
-         * @param {*} data  数据(仅仅支持String) 
-         */
-        value: function setPageHandler(pageName, data) {
-            if ('#' + pageName === window.location.hash) {
-                this.Component.toast('无法在同一页面进行通信!');
-                return;
-            }
-            var index = HandlerModule.findIndex(function (element) {
-                return element.key === pageName;
-            });
-
-            if (index >= 0) {
-                if (data === undefined) {
-                    HandlerModule.splice(index, 1);
-                } else {
-                    HandlerModule[index].data = data;
-                }
-            } else {
-                HandlerModule.push({ key: pageName, data: data });
-            }
-            index = null;
-        }
-        /**
-         * 页面刷新时保存 HandlerModule
-         */
-
-    }, {
-        key: 'refreshHandler',
-        value: function refreshHandler() {
-            if (HandlerModule.length > 0) {
-                this.localStorage('handler', JSON.stringify(HandlerModule));
-            }
-        }
-        /**
-         * 解决页面刷新handler清除的问题
-         */
-
-    }, {
-        key: 'getLocalHandler',
-        value: function getLocalHandler() {
-            var data = this.getLocalStorage('handler');
-            if (data) {
-                HandlerModule = JSON.parse(data);
-                this.clearLocalStorage('handler');
-            }
-        }
-    }]);
-
-    return Base;
-}();
+}
 
 /**
  * 组件类
  * 在真实项目使用时如果不使用该类 可以删除
  * 或者如果觉得该文件过大  可以放到别的文件中
  */
-
-
-var Component = function () {
-    function Component() {
-        _classCallCheck(this, Component);
+class Component {
+    /**
+     * 上传图片的组件
+     * @param {*} pNode  父节点
+     * @param {*} number 数量
+     * @param {*} callback 
+     */
+    uploadImg(pNode, number, callback) {
+        let parentImgNode = document.createElement('div');
+        let html = '';
+        html += '<div class="am-form-group am-form-file"><button type="button" class="am-btn am-btn-danger am-btn-sm">\n        <i class="am-icon-cloud-upload"></i> \u9009\u62E9\u8981\u4E0A\u4F20\u7684\u6587\u4EF6</button>\n      <input id="uploadimg"  type="file" multiple></div><div id="file-list"></div>';
+        $(parentImgNode).html(html);
+        html = '';
+        pNode.append(parentImgNode);
+        pNode.find('#uploadimg').on('change', function () {
+            callback(this.files[0]);
+        });
+    };
+    /**
+     * 提示信息
+     * @param {*} content 
+     * @param {*} type [primary, secondary, success, warning, danger, success]
+     * @param {*} time 
+     */
+    toast(content, type, time) {
+        let node = $('#otherplug');
+        $(otherPlugNode).html(`
+        <span class="toast am-badge am-badge-${type || 'warning'}">${content}</span>`).show();
+        $(otherPlugNode).fadeIn(500, () => {
+            $(otherPlugNode).fadeOut(time || 1000, () => {
+                $(otherPlugNode).html(``);
+            });
+            // let thread = setTimeout(() => {
+            //     $(otherPlugNode).html(``).hide();
+            //     clearTimeout(thread);
+            // }, time || 1000);
+        });
     }
-
-    _createClass(Component, [{
-        key: 'uploadImg',
-
-        /**
-         * 上传图片的组件
-         * @param {*} pNode  父节点
-         * @param {*} number 数量
-         * @param {*} callback 
-         */
-        value: function uploadImg(pNode, number, callback) {
-            var parentImgNode = document.createElement('div');
-            var html = '';
-            html += '<div class="am-form-group am-form-file"><button type="button" class="am-btn am-btn-danger am-btn-sm">\n        <i class="am-icon-cloud-upload"></i> \u9009\u62E9\u8981\u4E0A\u4F20\u7684\u6587\u4EF6</button>\n      <input id="uploadimg"  type="file" multiple></div><div id="file-list"></div>';
-            $(parentImgNode).html(html);
-            html = '';
-            pNode.append(parentImgNode);
-            pNode.find('#uploadimg').on('change', function () {
-                callback(this.files[0]);
-            });
-        }
-    }, {
-        key: 'toast',
-
-        /**
-         * 提示信息
-         * @param {*} content 
-         * @param {*} type [primary, secondary, success, warning, danger, success]
-         * @param {*} time 
-         */
-        value: function toast(content, type, time) {
-            var node = $('#otherplug');
-            $(otherPlugNode).html('\n        <span class="toast am-badge am-badge-' + (type || 'warning') + '">' + content + '</span>').show();
-            $(otherPlugNode).fadeIn(500, function () {
-                var thread = setTimeout(function () {
-                    $(otherPlugNode).html('').hide();
-                    clearTimeout(thread);
-                }, time || 1000);
-            });
-        }
-    }]);
-
-    return Component;
-}();
+}
 
 window.onload = function () {
     BaseClass.getLocalHandler();
@@ -460,7 +372,7 @@ window.onhashchange = function () {
 
 window.onbeforeunload = function () {
     BaseClass.refreshHandler();
-};
+}
 
 //初始化页面
 function initPage() {
@@ -470,9 +382,13 @@ function initPage() {
     BaseClass.silderTabClick();
 }
 
+/**
+ * 页面销毁
+ */
 function destory() {
     BaseClass.clearLocalStorage('localstorage');
     pages = null;
+    development = null;
     pageTiles = null;
     BaseClass = null;
     baseUrl = null;
@@ -485,13 +401,14 @@ function destory() {
     ErrorMsg = null;
 }
 
+
 /**
  * 是否有譔页面
  * @param {*} array 
  * @param {*} pageName 
  */
-function inArray(array, pageName) {
-    for (var index = 0; index < array.length; index++) {
+function inArray(array, pageName) {    
+    for (let index = 0; index < array.length; index++) {
         if (array[index] === pageName) {
             return true;
         }
@@ -505,7 +422,7 @@ function inArray(array, pageName) {
  * @param {*} value 
  */
 function getArrayByKey(arr, key, value) {
-    var array = arr.map(function (element, index, c) {
+    let array = arr.map(function (element, index, c) {
         if (element[key] === value) {
             return element;
         } else {
@@ -520,12 +437,12 @@ function getArrayByKey(arr, key, value) {
  * @param {*} array 
  */
 function isAjaxNull() {
-    for (var _len = arguments.length, array = Array(_len), _key = 0; _key < _len; _key++) {
+    for (let _len = arguments.length, array = Array(_len), _key = 0; _key < _len; _key++) {
         array[_key] = arguments[_key];
     }
 
-    for (var index = 0; index < array.length; index++) {
-        var element = array[index];
+    for (let index = 0; index < array.length; index++) {
+        let element = array[index];
         if (element === 'undefined' || !element || element === '') {
             BaseClass.Component.toast('输入不能为空!');
             return false;
@@ -589,6 +506,7 @@ function postHttp(url, formData, sucCallback) {
     });
 }
 
+
 /*
 三个参数
 file：一个是文件(类型是图片格式)，
@@ -597,34 +515,34 @@ objDiv：一个是容器或者回调函数
 photoCompress()
 */
 function photoCompress(file, w, objDiv) {
-    var ready = new FileReader();
+    let ready = new FileReader();
     /*开始读取指定的Blob对象或File对象中的内容. 当读取操作完成时,readyState属性的值会成为DONE,如果设置了onloadend事件处理程序,则调用之.同时,result属性中将包含一个data: URL格式的字符串以表示所读取文件的内容.*/
     ready.readAsDataURL(file);
     ready.onload = function () {
-        var re = this.result;
+        let re = this.result;
         canvasDataURL(re, w, objDiv);
     };
 }
 
 function canvasDataURL(path, obj, callback) {
-    var img = new Image();
+    let img = new Image();
     img.src = path;
     img.onload = function () {
-        var that = this;
+        let that = this;
         // 默认按比例压缩
-        var w = that.width,
+        let w = that.width,
             h = that.height,
             scale = w / h;
         w = obj.width || w;
         h = obj.height || w / scale;
-        var quality = 0.7; // 默认图片质量为0.7
+        let quality = 0.7; // 默认图片质量为0.7
         //生成canvas
-        var canvas = document.createElement('canvas');
-        var ctx = canvas.getContext('2d');
+        let canvas = document.createElement('canvas');
+        let ctx = canvas.getContext('2d');
         // 创建属性节点
-        var anw = document.createAttribute("width");
+        let anw = document.createAttribute("width");
         anw.nodeValue = w;
-        var anh = document.createAttribute("height");
+        let anh = document.createAttribute("height");
         anh.nodeValue = h;
         canvas.setAttributeNode(anw);
         canvas.setAttributeNode(anh);
@@ -634,7 +552,7 @@ function canvasDataURL(path, obj, callback) {
             quality = obj.quality;
         }
         // quality值越小，所绘制出的图像越模糊
-        var base64 = canvas.toDataURL('image/jpeg', quality);
+        let base64 = canvas.toDataURL('image/jpeg', quality);
         // 回调函数返回base64的值
         callback(base64);
     };
@@ -645,7 +563,7 @@ function canvasDataURL(path, obj, callback) {
  *            用url方式表示的base64图片数据
  */
 function convertBase64UrlToBlob(urlData) {
-    var arr = urlData.split(','),
+    let arr = urlData.split(','),
         mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]),
         n = bstr.length,
@@ -663,7 +581,7 @@ function convertBase64UrlToBlob(urlData) {
  * @param {*} callback 
  */
 function showImageByBase64(file, imgNode, callback) {
-    var fr = new FileReader();
+    let fr = new FileReader();
     fr.readAsDataURL(file);
     fr.onloadend = function (e) {
         imgNode.attr('src', e.target.result);
@@ -671,7 +589,7 @@ function showImageByBase64(file, imgNode, callback) {
             quality: 0.2
         }, function (base64Codes) {
             //这里bl 为文件对象
-            var bl = convertBase64UrlToBlob(base64Codes);
+            let bl = convertBase64UrlToBlob(base64Codes);
             callback(bl);
         });
     };

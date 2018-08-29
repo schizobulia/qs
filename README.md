@@ -15,24 +15,45 @@
     
     1. 只需将项目放置服务器上,然后访问index.html就可以.
 
-    2 请根据实际情况改变静态资源路径
+    2  请根据实际情况改变静态资源路径
+
+    发布:
+
+    1. let development = true; (在base.js中)
+
+    2. npm run build  (如果不考虑兼容与优化可以不执行此步骤)
+
 ```
 
-
 1. ### 目录结构
-    - css
-        - [amazeui.min.css](http://amazeui.org/)
-        - base.css (项目css)
-    - fonts (amazeui字体文件)
-    - img (本地图片)
-    - js
-        - base 
-            - base.js (项目公共类)
-        - page (module层)
-            - page1.js (模块逻辑代码)
-        - plug (所有用到的第三方js插件)
-    - page (view层)
-        - page1.html (模块视图层)
+
+    ```
+    qs
+    │   README.md
+    │   .babelrc    
+    │   package.json   
+    │   index.html   
+    │      
+    └───css
+    │   │   amazeui.min.css
+    │   │   base.css (项目css)  
+    │    
+    └───js
+    │   └───base
+    │   │      base.js (项目公共类)
+    │   │        
+    │   └───page (module层)
+    │   │        page1.js
+    │   │    
+    │   └───plug (所有用到的第三方js插件)
+    │   
+    └───page (view层)
+    │   │   page1.html 
+    │ 
+    └───fonts (amazeui字体文件)
+    └───img (本地图片)
+    └───src (打包后的代码)
+    ```
 
 2. ### 使用说明
 
@@ -66,39 +87,8 @@
 
 5. ### 常用组件
     注:所有组件在[page2](https://github.com/schizobulia/qs/blob/master/js/page/page2.js)中有具体的使用代码
-    - 多图上传
-
-    ```javascript
-    /**
-     * 多图上传组件代码
-     * =============
-     */
-    var imgs = [];
-    var numbers = 2;
-    BaseClass.uploadImg(view, numbers, function (file) {
-        if (imgs.length >= numbers) {
-            alert('\u6700\u591A\u53EA\u80FD\u4E0A\u4F20' + numbers + '\u5F20\u56FE\u7247.');
-            return;
-        }
-        var uid = new Date().getTime();
-        var imgNode = document.createElement('img');
-        $(imgNode).addClass('uploadimgitem').attr('uid', uid);
-        showImageByBase64(file, $(imgNode), function (blob) {
-            imgs.push({ file: blob, id: uid });
-            view.find('#file-list').append(imgNode);
-            $(imgNode).click(function (e) {
-                var that = this;
-                var imguid = $(e.target).attr('uid');
-                imgs.map(function (element, index) {
-                    if (element.id == uid) {
-                        imgs.splice(index, 1);
-                        view.find('#file-list')[0].removeChild(that);
-                    }
-                });
-            });
-        });
-    });
-    ```
+    - uploadImg (多图上传组件代码)
+    - toast (提示信息))
 
 
 6. ### 使用到的框架

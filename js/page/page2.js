@@ -49,7 +49,8 @@
      * =============
      */
     view.find('#toast').click(function (e) {
-        // BaseClass.Component.toast('内容', 'warning', 1000);
-        BaseClass.Component.toast('内容');
+        BaseClass.Component.toast('内容', 'warning', 3000);
+        // BaseClass.Component.toast('内容');
     });
+    // "build": "gulp start"
 })();

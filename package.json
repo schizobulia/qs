@@ -1,0 +1,35 @@
+{
+  "name": "qs",
+  "version": "1.0.0",
+  "description": "基于jquery的单页面应用",
+  "main": "index.html",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gulp start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schizobulia/qs.git"
+  },
+  "author": "schizobulia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/schizobulia/qs/issues"
+  },
+  "homepage": "https://github.com/schizobulia/qs#readme",
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "babel-preset-es2015": "^6.5.0",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-imagemin": "^4.1.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-uglify": "^3.0.1"
+  },
+  "dependencies": {
+    "gulp-htmlmin": "^4.0.0"
+  }
+}
