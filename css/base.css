@@ -26,6 +26,7 @@ body{
     right: 10px;
     line-height: 53px;
     z-index: 2;
+    color: white;
 }
 #header #windowback{
     height: 100%;

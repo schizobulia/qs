@@ -20,8 +20,10 @@
     发布:
 
     1. let development = true; (在base.js中)
-
-    2. npm run build  (如果不考虑兼容与优化可以不执行此步骤)
+    
+    2. npm i
+    
+    3. npm run build  (如果不考虑兼容与优化可以不执行此步骤)
 
 ```
 
@@ -30,7 +32,7 @@
     ```
     qs
     │   README.md
-    │   .babelrc    
+    │   gulpfile.js  
     │   package.json   
     │   index.html   
     │      
@@ -43,7 +45,7 @@
     │   │      base.js (项目公共类)
     │   │        
     │   └───page (module层)
-    │   │        page1.js
+    │   │      page1.js
     │   │    
     │   └───plug (所有用到的第三方js插件)
     │   
@@ -62,15 +64,19 @@
 3. ### 创建一个模块
     - 创建一个view与Module(必需同名)
     - 在base.js中注册该模块
-    <img src="./doc/register.png"/>
-    <br/>
+    
+    ```javascript
+        let pages = ['page1', 'page2']; //所有页面page的名称   在使用页面前请先此注册
+        let pageTiles = ['页面1', '组件的使用'];
+    ```
+
     - 模块间的跳转
 
     ```javascript
         BaseClass.changeHash('模块名称', '需要发送的消息');
         
         //接收发送的消息
-        var handleData = BaseClass.getPageHandler('当前模块名称');
+        let handleData = BaseClass.getPageHandler('当前模块名称');
     ```
 
 
@@ -81,15 +87,24 @@
     - 请不要随意更改base.js中的代码
     - module中的代码为动态加载  
     - base.css中包含了所有的style, 如果觉得不方便也可以使用动态加载css, 方法为:
-    <img src="./doc/loadingcss.png"/>
+
+    ```javascript
+        loadingCss(pageName) {
+            $('head').children(':last').attr({
+                rel: window.location.origin + '/css/page/' + pageName,
+                type: 'text/css',
+                href: './style.css'
+            });
+        };
+    ```
 
     - 在页面跳转时请不要使用a标签
 
 5. ### 常用组件
     注:所有组件在[page2](https://github.com/schizobulia/qs/blob/master/js/page/page2.js)中有具体的使用代码
     - uploadImg (多图上传组件代码)
-    - toast (提示信息))
-
+    - toast (提示信息)
+    - [好多组件amazeui已经提供](http://amazeui.org/widgets?_ver=2.x)
 
 6. ### 使用到的框架
     - [amazeui](http://amazeui.org/)

@@ -31,6 +31,11 @@ let ErrorMsg = {
  * 项目基类
  */
 class Base {
+
+    constructor() {
+        this.animOpction = null;   //页面跳转动画
+    }
+
     /**
     * 侧别栏的单击跳转事件
     */
@@ -38,6 +43,7 @@ class Base {
         $('#sidebarlist').click((e) => {
             let pageName = $(e.target).attr('uid');
             this.changeHash(pageName);
+            pageName = null;
         });
         $('#windowback').click((e) => {
             window.history.back();
@@ -63,6 +69,7 @@ class Base {
             this.readHTML(defaultPage, function (html) { });
         }
         this.changeHeadeLeft();
+        pageName = null;
     }
 
     backHome() {
@@ -90,6 +97,7 @@ class Base {
     closeSidebar() {
         let silder = $('#sidebar');
         silder.offCanvas('close');
+        silder = null;
     }
 
     /**
@@ -99,7 +107,24 @@ class Base {
     */
     setShowPage(pageName, pageData) {
         contentNode.innerHTML = pageData;
+        if (this.animOpction) {
+            this.activityAnimation(pageName,
+                this.animOpction.anim || 'fade',
+                this.animOpction.time || 1);
+            this.animOpction = null;
+        }
     };
+
+    /**
+     * 页面间的跳转动画
+     * @param {*} view 
+     * @param {*} anim 
+     * @param {*} time 
+     */
+    activityAnimation(pageName, anim, time) {
+        $(`#${pageName}page`).addClass(`am-animation-${anim}`)
+            .addClass(`am-animation-delay-${time}`);
+    }
 
     /**
     * 是否隐藏轮播图
@@ -108,9 +133,9 @@ class Base {
     hideTobar(type) {
         if (type === 'hide') {
             $('#header').css('height', '8%');
-            $('#silderouter').css('display', 'none');
+            $('#silderouter').hide();
         } else {
-            $('#silderouter').css('display', 'block').css('top', '8%');
+            $('#silderouter').show().css('top', '8%');
             $('#header').css('height', '53px');
         }
     }
@@ -203,6 +228,7 @@ class Base {
                 console.log(err);
             }
         });
+        that = null;
     };
     /**
      * 修改主页title
@@ -243,6 +269,7 @@ class Base {
             otherPlugNode.innerHTML = html;
             $(otherPlugNode).show();
             $('#loaddialog').modal('toggle');
+            html = '';
         } else {
             $('#loaddialog').modal('close');
             $(otherPlugNode).hide();
@@ -252,11 +279,15 @@ class Base {
 
     /**
      * 修改页面hash
-     * @param {*} hash 
+     * @param {*} hash
+     * @param {*} animOpction  动画的属性 
+     * { anim:   'fade', 效果  http://amazeui.org/css/animation
+     *   time:   　1   } 时间  不要太长 
      */
-    changeHash(hash, data) {
+    changeHash(hash, data, animOpction) {
         this.setPageHandler(hash, data);
         window.location.href = window.location.origin + ('#' + hash);
+        this.animOpction = animOpction;
     };
 
     /**
@@ -313,6 +344,7 @@ class Base {
             HandlerModule = JSON.parse(data);
             this.clearLocalStorage('handler');
         }
+        data = null;
     }
 
 }
@@ -330,15 +362,40 @@ class Component {
      * @param {*} callback 
      */
     uploadImg(pNode, number, callback) {
+        let imgs = [];
         let parentImgNode = document.createElement('div');
         let html = '';
         html += '<div class="am-form-group am-form-file"><button type="button" class="am-btn am-btn-danger am-btn-sm">\n        <i class="am-icon-cloud-upload"></i> \u9009\u62E9\u8981\u4E0A\u4F20\u7684\u6587\u4EF6</button>\n      <input id="uploadimg"  type="file" multiple></div><div id="file-list"></div>';
         $(parentImgNode).html(html);
-        html = '';
         pNode.append(parentImgNode);
         pNode.find('#uploadimg').on('change', function () {
-            callback(this.files[0]);
+            callback(imgs);
+            if (imgs.length >= number) {
+                BaseClass.Component.toast('\u6700\u591A\u53EA\u80FD\u4E0A\u4F20' + number + '\u5F20\u56FE\u7247.');
+                return;
+            }
+            let file = this.files[0];
+            let uid = new Date().getTime();
+            let imgNode = document.createElement('img');
+            $(imgNode).addClass('uploadimgitem').attr('uid', uid);
+            showImageByBase64(file, $(imgNode), function (blob) {
+                imgs.push({ file: blob, id: uid });
+                pNode.find('#file-list').append(imgNode);
+                $(imgNode).click(function (e) {
+                    let imguid = $(e.target).attr('uid');
+                    imgs.map((element, index) => {
+                        if (element.id == uid) {
+                            imgs.splice(index, 1);
+                            pNode.find('#file-list')[0].removeChild(this);
+                            callback(imgs);
+                        }
+                    });
+                });
+            });
         });
+
+        html = '';
+        parentImgNode = null;
     };
     /**
      * 提示信息
@@ -407,7 +464,7 @@ function destory() {
  * @param {*} array 
  * @param {*} pageName 
  */
-function inArray(array, pageName) {    
+function inArray(array, pageName) {
     for (let index = 0; index < array.length; index++) {
         if (array[index] === pageName) {
             return true;
