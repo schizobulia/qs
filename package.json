@@ -7,7 +7,7 @@
     "doc": "doc"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "standard",
     "build": "gulp start"
   },
   "repository": {
@@ -27,9 +27,16 @@
     "gulp-babel": "^6.1.2",
     "gulp-imagemin": "^4.1.0",
     "gulp-minify-css": "^1.2.4",
-    "gulp-uglify": "^3.0.1"
+    "gulp-uglify": "^3.0.1",
+    "standard": "^12.0.1"
   },
   "dependencies": {
     "gulp-htmlmin": "^4.0.0"
+  },
+  "standard": {
+    "ignore": [
+      "./plug/**/*.js",
+      "gulpfile.js"
+    ]
   }
 }

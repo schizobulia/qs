@@ -3,6 +3,8 @@
     text-align:  center;
 ">基于jquery的单页面应用</h2>
 
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 ## 运行
 ```
     node的方式:
@@ -58,7 +60,7 @@
     ```
 
 2. ### 使用说明
-
+    - npm run test （此方式可检查所有js代码是否规范， 当然也可以使用 standard filename.js）
     - 该应用推荐新手使用,大佬请自行前往React, Vue, Angular    
 
 3. ### 创建一个模块
