@@ -1,7 +1,4 @@
-'use strict'
-
 //page2
-
 (function () {
   let view = $('#page2page')
   // BaseClass.hideTobar('hide')
@@ -32,7 +29,25 @@
     // BaseClass.Component.toast('内容')
   })
 
+  /**
+   * 加载动画
+   * =============
+   */
   view.find('#loadingdialog').click((e) => {
     BaseClass.Component.loadingDailog('show', '加载中...')
   })
+
+  /**
+   * 通知栏 
+   * =============
+   */
+  view.find('#notification').click((e) => {
+    BaseClass.Component.notification('标题', '这里内容', 'success', () => {
+      console.log('关闭')
+    }, 'top')
+    // BaseClass.Component.notification('标题', '这里内容', 'success', () => {
+    //   console.log('关闭')
+    // }, 'bottom')
+  })
+
 })()

@@ -122,3 +122,14 @@ body{
     margin-left: 5px;
     margin-top: 5px;
 }
+
+#notification.component{
+    position: fixed;
+    width: 250px;
+    min-height: 110px;
+    right: 10px;
+    top: 55px;
+}
+#notification.component #close{
+    font-size: 1.6em;
+}

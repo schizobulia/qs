@@ -1,5 +1,4 @@
-'use strict'
-//论坛
+// 论坛
 (function () {
   let a = 's'
   var view = $('#page1page')
@@ -10,3 +9,4 @@
     // BaseClass.changeHash('page2', '来自page1发送的消息')
   })
 })()
+

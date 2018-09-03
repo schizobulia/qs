@@ -106,6 +106,8 @@
     注:所有组件在[page2](https://github.com/schizobulia/qs/blob/master/js/page/page2.js)中有具体的使用代码
     - uploadImg (多图上传组件代码)
     - toast (提示信息)
+    - loadingDailog (加载动画)
+    - notification (通知栏)
     - [好多组件amazeui已经提供](http://amazeui.org/widgets?_ver=2.x)
 
 6. ### 使用到的框架

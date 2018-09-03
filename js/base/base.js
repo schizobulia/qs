@@ -423,6 +423,32 @@ class Component {
 			otherPlugNode.innerHTML = ''
 		}
 	}
+
+	/**
+	 * 通知栏
+	 * @param {*} title 
+	 * @param {*} content 	
+	 * @param {*} type   		[primary, secondary, success, warning, danger, success]
+	 * @param {*} callback  单击关闭后的回调
+	 * @param {*} location  可选 
+	 */
+	notification(title, content, type, callback, location) {
+		let divNode = document.createElement('div')
+		let html = `<div id="notification" class="component"><div class="am-alert am-alert-${type}">
+				<button type="button" class="am-close" id="close">&times;</button><h4><i class="am-icon-success"></i> ${title}</h4>
+				${content}</div></div>`
+		divNode.innerHTML = html
+		if (location === 'bottom') {
+			$(divNode).find('#notification').css('top', '85%')
+		}
+		contentNode.append(divNode)
+		$(divNode).find('#close').click((e) => {
+			contentNode.removeChild(divNode)
+			divNode = null
+			callback()
+		})
+		html = ''
+	}
 }
 
 window.onload = function () {
