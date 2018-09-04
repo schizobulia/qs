@@ -5,6 +5,8 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
+### 注：此分支是测试版本->单独加入了[pwa](https://lavas.baidu.com/pwa), 不推荐使用～～
+
 ## 运行
 ```
     node的方式:

@@ -3,6 +3,8 @@
  */
 //是否为线上版
 let development = false
+//线上静态资源路径
+let development_static = '/public/src/'
 //所有页面page的名称   在使用页面前请先此注册
 let pages = ['page1', 'page2']
 let pageTiles = ['页面1', '组件的使用']
@@ -152,7 +154,7 @@ class Base {
    * @param {*} pageName 
    */
 	loadPageScrpat(pageName, sucCallback) {
-		$.getScript(window.location.origin + `/js/page/` + pageName + '.js', function () {
+		$.getScript(window.location.origin + `${development_static}js/page/` + pageName + '.js', function () {
 			sucCallback()
 		})
 	}
@@ -163,7 +165,7 @@ class Base {
   */
 	loadingCss(pageName) {
 		$('head').children(':last').attr({
-			rel: window.location.origin + '/css/page/' + pageName,
+			rel: window.location.origin + `${development_static}/css/page/` + pageName,
 			type: 'text/css',
 			href: './style.css'
 		})
@@ -469,13 +471,13 @@ function initPage() {
 	BaseClass.Component = new Component()
 	// $('#header').hide()
 	BaseClass.silderTabClick()
-	pwa();
+	pwa(development_static);
 }
 
-function pwa() {
+function pwa(staticPath) {
 	// 检测浏览器是否支持SW
 	if (navigator.serviceWorker != null) {
-		navigator.serviceWorker.register('/pwaservice.js', { scope: '/' }).then(function (registration) {
+		navigator.serviceWorker.register(`${staticPath}/pwaservice.js`, { scope: staticPath }).then(function (registration) {
 			// 注册成功
 			console.log('ServiceWorker registration successful with scope: ', registration.scope);
 		}).catch(function (err) {
