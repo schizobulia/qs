@@ -469,7 +469,23 @@ function initPage() {
 	BaseClass.Component = new Component()
 	// $('#header').hide()
 	BaseClass.silderTabClick()
+	pwa();
 }
+
+function pwa() {
+	// 检测浏览器是否支持SW
+	if (navigator.serviceWorker != null) {
+		navigator.serviceWorker.register('/pwaservice.js', { scope: '/' }).then(function (registration) {
+			// 注册成功
+			console.log('ServiceWorker registration successful with scope: ', registration.scope);
+		}).catch(function (err) {
+			// 注册失败 :(
+			console.log('ServiceWorker registration failed: ', err);
+		});
+	}
+}
+
+
 
 /**
  * 页面销毁
