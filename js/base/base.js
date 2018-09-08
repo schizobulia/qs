@@ -229,10 +229,16 @@ class Base {
 				that.setShowPage(pageName, result)
 				sucCallback(result)
 				that.changePageTitle(pageName)
-				that.loadPageScrpat(pageName, function (s) {
-					// let s = pageName.substring(0, 1).toUpperCase() + pageName.substring(1)
-					// eval(`new ${s}Activity('#${pageName}page').onCreater()`)
-				})
+				let activity = that.getActivityNameByPageName(pageName)
+				if (that.isCreaterActivity(activity)) {
+					that.loadPageScrpat(pageName, function (s) {
+						eval(`new ${activity}Activity('${pageName}page').onCreater()`)
+						activity = null
+					})
+				} else {
+					eval(`new ${activity}Activity('${pageName}page').onCreater()`)
+					activity = null
+				}
 			},
 			error: function error(err) {
 				that.Component.loadingDailog('hide')
@@ -241,6 +247,27 @@ class Base {
 		})
 		that = null
 	}
+
+	/**
+	 * 是否重新生成activity
+	 */
+	isCreaterActivity(activity) {
+		try {
+			eval(`${activity}Activity`)
+			return false
+		} catch (error) {
+			return true
+		}
+	}
+
+	/**
+	 * 根据pageName获取activity的名称
+	 * @param {*} pageName 
+	 */
+	getActivityNameByPageName(pageName) {
+		return pageName.substring(0, 1).toUpperCase() + pageName.substring(1)
+	}
+
   /**
    * 修改主页title
    * @param {*} title 
@@ -398,11 +425,10 @@ class Component {
    * @param {*} time 
    */
 	toast(content, type, time) {
-		let node = $('#otherplug')
 		$(otherPlugNode).html(`
-        <span class="toast am-badge am-badge-${type || 'warning'}">${content}</span>`).show()
+						<span class= "toast am-badge am-badge-${type || 'warning'}" > ${content}</span > `).show()
 		$(otherPlugNode).fadeIn(500, () => {
-			$(otherPlugNode).fadeOut(time || 1000, () => {
+			$(otherPlugNode).fadeOut(time || 300, () => {
 				$(otherPlugNode).html(``)
 			})
 		})
@@ -437,9 +463,9 @@ class Component {
 	 */
 	notification(title, content, type, callback, location) {
 		let divNode = document.createElement('div')
-		let html = `<div id="notification" class="component"><div class="am-alert am-alert-${type}">
-				<button type="button" class="am-close" id="close">&times;</button><h4><i class="am-icon-success"></i> ${title}</h4>
-				${content}</div></div>`
+		let html = `< div id = "notification" class= "component" > <div class="am-alert am-alert-${type}">
+							<button type="button" class="am-close" id="close">&times;</button><h4><i class="am-icon-success"></i> ${title}</h4>
+							${content}</div></div > `
 		divNode.innerHTML = html
 		if (location === 'bottom') {
 			$(divNode).find('#notification').css('top', '85%')
@@ -455,13 +481,13 @@ class Component {
 }
 
 /**
- * view类 
- * 每个module层会生成一个view
+ * Controller类 
+ * 每个module层会生成一个Controller
  */
-class View {
+class ControllerActivity {
 	constructor(pageName) {
 		this.pageName = pageName
-		this.view = $(`#${pageName}page`)
+		this.view = $(`#${pageName}`)
 	}
 	/**
 	 * 创建视图
