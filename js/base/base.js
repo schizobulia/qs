@@ -2,13 +2,15 @@
  * 项目基类
  */
 //是否为线上版
-let development = false
+let development = true
+//线上静态资源路径
+let developmentPath = ''
 //所有页面page的名称   在使用页面前请先此注册
 let pages = ['page1', 'page2']
 let pageTiles = ['页面1', '组件的使用']
 let BaseClass = null
 //api接口
-let baseUrl = '127.0.0.1:3000'
+const baseUrl = '127.0.0.1:3000'
 //主内容
 let contentNode = $('#content')[0]
 //对话框之类
@@ -152,7 +154,7 @@ class Base {
    * @param {*} pageName 
    */
 	loadPageScrpat(pageName, sucCallback) {
-		$.getScript(window.location.origin + `/js/page/` + pageName + '.js', function () {
+		$.getScript(window.location.origin + `${developmentPath}/js/` + pageName + '.js', function () {
 			sucCallback()
 		})
 	}
@@ -163,7 +165,7 @@ class Base {
   */
 	loadingCss(pageName) {
 		$('head').children(':last').attr({
-			rel: window.location.origin + '/css/page/' + pageName,
+			rel: window.location.origin + `${developmentPath}/css/page/` + pageName,
 			type: 'text/css',
 			href: './style.css'
 		})
@@ -206,39 +208,41 @@ class Base {
    * @param {*} sucCallback 
    */
 	readHTML(pageName, sucCallback) {
-		let that = this
 		if (!inArray(pages, pageName)) {
 			return
 		}
 		let localPageData = this.getLocalStorage(pageName)
 		if (localPageData) {
 			this.setShowPage(pageName, localPageData)
-			return
+		} else {
+			this.getViewByHttp(pageName, sucCallback)
 		}
+		let activity = this.getActivityNameByPageName(pageName)
+		if (this.isCreaterActivity(activity)) {
+			this.loadPageScrpat(`page/${pageName}`, function (s) {
+				eval(`new ${activity}Activity('${pageName}page').onCreater()`)
+				activity = null
+			})
+		} else {
+			eval(`new ${activity}Activity('${pageName}page').onCreater()`)
+			activity = null
+		}
+		this.changePageTitle(pageName)
+	}
+
+	getViewByHttp(pageName, sucCallback) {
+		let that = this
 		this.Component.loadingDailog('show', '加载中...')
 		$.ajax({
 			async: false,
-			url: '/page/' + pageName + '.html',
+			url: `${developmentPath}/page/` + pageName + '.html',
 			success: function success(result) {
 				that.Component.loadingDailog('hide')
 				//打开此处可加入单页面缓存(避免多次请求)
 				//开发时 不建议打开缓存
-				if (development) {
-					that.localStorage(pageName, result)
-				}
+				that.localStorage(pageName, result)
 				that.setShowPage(pageName, result)
 				sucCallback(result)
-				that.changePageTitle(pageName)
-				let activity = that.getActivityNameByPageName(pageName)
-				if (that.isCreaterActivity(activity)) {
-					that.loadPageScrpat(pageName, function (s) {
-						eval(`new ${activity}Activity('${pageName}page').onCreater()`)
-						activity = null
-					})
-				} else {
-					eval(`new ${activity}Activity('${pageName}page').onCreater()`)
-					activity = null
-				}
 			},
 			error: function error(err) {
 				that.Component.loadingDailog('hide')
@@ -248,6 +252,7 @@ class Base {
 		that = null
 	}
 
+
 	/**
 	 * 是否重新生成activity
 	 */
@@ -256,7 +261,11 @@ class Base {
 			eval(`${activity}Activity`)
 			return false
 		} catch (error) {
-			return true
+			if (error.name === 'ReferenceError') {
+				return true
+			} else {
+				return false
+			}
 		}
 	}
 
@@ -275,6 +284,7 @@ class Base {
 	changePageTitle(pageName) {
 		let i = pages.indexOf(pageName)
 		$('#pagetitle').text(pageTiles[i])
+		i = null
 	}
 
   /**
@@ -295,6 +305,7 @@ class Base {
 			// closeOnConfirm: false,
 			onCancel: function onCancel() { }
 		})
+		html = null
 	}
 
 
@@ -367,155 +378,30 @@ class Base {
 		}
 		data = null
 	}
-
-}
-
-/**
- * 组件类
- * 在真实项目使用时如果不使用该类 可以删除
- * 或者如果觉得该文件过大  可以放到别的文件中
- */
-class Component {
-  /**
-   * 上传图片的组件
-   * @param {*} pNode  父节点
-   * @param {*} number 数量
-   * @param {*} callback 
-   */
-	uploadImg(pNode, number, callback) {
-		let imgs = []
-		let parentImgNode = document.createElement('div')
-		let html = ''
-		html += '<div class="am-form-group am-form-file"><button type="button" class="am-btn am-btn-danger am-btn-sm">\n        <i class="am-icon-cloud-upload"></i> 上传</button>\n      <input id="uploadimg" accept="image/*" type="file" multiple></div><div id="file-list"></div>'
-		$(parentImgNode).html(html)
-		pNode.append(parentImgNode)
-		pNode.find('#uploadimg').on('change', function () {
-			callback(imgs)
-			if (imgs.length >= number) {
-				BaseClass.Component.toast('\u6700\u591A\u53EA\u80FD\u4E0A\u4F20' + number + '\u5F20\u56FE\u7247.')
-				return
-			}
-			let file = this.files[0]
-			let uid = new Date().getTime()
-			let imgNode = document.createElement('img')
-			$(imgNode).addClass('uploadimgitem').attr('uid', uid)
-			showImageByBase64(file, $(imgNode), function (blob) {
-				imgs.push({ file: blob, id: uid })
-				pNode.find('#file-list').append(imgNode)
-				$(imgNode).click(function (e) {
-					let imguid = $(e.target).attr('uid')
-					imgs.map((element, index) => {
-						if (element.id == uid) {
-							imgs.splice(index, 1)
-							pNode.find('#file-list')[0].removeChild(this)
-							callback(imgs)
-						}
-					})
+	/**
+	 * 加载开发时需要模块
+	 */
+	loadingDebug(callback) {
+		if (development) {
+			callback()
+		} else {
+			this.loadPageScrpat(`base/ControllerActivity`, () => {
+				this.loadPageScrpat(`base/Component`, () => {
+					callback()
 				})
 			})
-		})
-
-		html = ''
-		parentImgNode = null
-	}
-  /**
-   * 提示信息
-   * @param {*} content 
-   * @param {*} type [primary, secondary, success, warning, danger, success]
-   * @param {*} time 
-   */
-	toast(content, type, time) {
-		$(otherPlugNode).html(`
-						<span class= "toast am-badge am-badge-${type || 'warning'}" > ${content}</span > `).show()
-		$(otherPlugNode).fadeIn(500, () => {
-			$(otherPlugNode).fadeOut(time || 300, () => {
-				$(otherPlugNode).html(``)
-			})
-		})
-	}
-
-  /**
-   * 显示加载动画
-   * @param {*} type  如果为show 显示   其他隐藏 
-   * @param {*} content 显示的内容
-   */
-	loadingDailog(type, content) {
-		if (type === 'show') {
-			let html = '<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="loaddialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + content + '</div><div class="am-modal-bd"><span class="am-icon-spinner am-icon-spin"></span></div></div></div>'
-			otherPlugNode.innerHTML = html
-			$(otherPlugNode).show()
-			$('#loaddialog').modal('toggle')
-			html = ''
-		} else {
-			$('#loaddialog').modal('close')
-			$(otherPlugNode).hide()
-			otherPlugNode.innerHTML = ''
 		}
 	}
-
-	/**
-	 * 通知栏
-	 * @param {*} title 
-	 * @param {*} content 	
-	 * @param {*} type   		[primary, secondary, success, warning, danger, success]
-	 * @param {*} callback  单击关闭后的回调
-	 * @param {*} location  可选 
-	 */
-	notification(title, content, type, callback, location) {
-		let divNode = document.createElement('div')
-		let html = `< div id = "notification" class= "component" > <div class="am-alert am-alert-${type}">
-							<button type="button" class="am-close" id="close">&times;</button><h4><i class="am-icon-success"></i> ${title}</h4>
-							${content}</div></div > `
-		divNode.innerHTML = html
-		if (location === 'bottom') {
-			$(divNode).find('#notification').css('top', '85%')
-		}
-		contentNode.append(divNode)
-		$(divNode).find('#close').click((e) => {
-			contentNode.removeChild(divNode)
-			divNode = null
-			callback()
-		})
-		html = ''
-	}
 }
-
-/**
- * Controller类 
- * 每个module层会生成一个Controller
- */
-class ControllerActivity {
-	constructor(pageName) {
-		this.pageName = pageName
-		this.view = $(`#${pageName}`)
-	}
-	/**
-	 * 创建视图
-	 */
-	onCreater() {
-		this.onStart()
-		return this.view
-	}
-	/**
-	 *　准备状态
-	 */
-	onStart() {
-
-	}
-
-	/**
-	 * 销毁
-	 */
-	onDestory() {
-		contentNode.removeChild(this.view[0])
-		this.view = null;
-	}
-}
-
 
 window.onload = function () {
-	BaseClass.getLocalHandler()
-	BaseClass.startPage()
+	BaseClass = new Base()
+	BaseClass.loadingDebug(() => {
+		BaseClass.Component = new Component()
+		BaseClass.getLocalHandler()
+		BaseClass.startPage()
+		BaseClass.silderTabClick()
+	})
 }
 window.onhashchange = function () {
 	BaseClass.startPage()
@@ -527,10 +413,7 @@ window.onbeforeunload = function () {
 
 //初始化页面
 function initPage() {
-	BaseClass = new Base()
-	BaseClass.Component = new Component()
 	// $('#header').hide()
-	BaseClass.silderTabClick()
 }
 
 /**
@@ -542,7 +425,6 @@ function destory() {
 	development = null
 	pageTiles = null
 	BaseClass = null
-	baseUrl = null
 	contentNode = null
 	otherPlugNode = null
 	defaultPage = null
@@ -599,7 +481,6 @@ function isAjaxNull() {
 */
 function httpGet(ajaxData, sucCallback) {
 	BaseClass.Component.loadingDailog('show', '加载中...')
-
 	$.ajax({
 		type: 'get',
 		url: baseUrl + ajaxData.url,

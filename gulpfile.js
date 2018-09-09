@@ -4,7 +4,7 @@ var uglify = require("gulp-uglify")
 var minify = require("gulp-minify-css")
 var imagemin = require("gulp-imagemin")
 var htmlmin = require("gulp-htmlmin")
-
+var concat = require('gulp-concat')
 /**
  * 转码与压缩
  */
@@ -13,9 +13,17 @@ gulp.task("conversion", function (callback) {
     .pipe(babel({
       presets: ["es2015"]
     }))
-    .pipe(gulp.dest("src/js/base/"))
+    .pipe(concat("base.js"))
     .pipe(uglify())
-    .pipe(gulp.dest("src/js/base/"))
+    .pipe(gulp.dest('src/js/base/'))
+
+  // gulp.src("js/base/**/*.js")
+  //   .pipe(babel({
+  //     presets: ["es2015"]
+  //   }))
+  //   .pipe(gulp.dest("src/js/base/"))
+  //   .pipe(uglify())
+  //   .pipe(gulp.dest("src/js/base/"))
 })
 gulp.task("conversionPage", function () {
   gulp.src("js/page/**/*.js")

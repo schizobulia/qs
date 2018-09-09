@@ -21,11 +21,14 @@
 
     发布:
 
-    1. let development = true; (在base.js中)
+    1. let developmentPath = '线上静态资源根目录'
+   
+    注: 如果不考虑兼容与优化可以不执行以下步骤
+    2. let development = true; (在base.js中)
     
-    2. npm i
+    3. npm i
     
-    3. npm run build  (如果不考虑兼容与优化可以不执行此步骤)
+    4. npm run build 
 
 ```
 
@@ -66,7 +69,7 @@
 3. ### 创建一个模块
     - 创建一个view与Module(必需同名)
     - 在base.js中注册该模块
-    
+    - Module中创建的类需要继承ControllerActivity  类名为: 模块名(首字母大写) + Activity
     ```javascript
         let pages = ['page1', 'page2']; //所有页面page的名称   在使用页面前请先此注册
         let pageTiles = ['页面1', '组件的使用'];
