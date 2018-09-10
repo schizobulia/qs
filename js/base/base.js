@@ -2,7 +2,7 @@
  * 项目基类
  */
 //是否为线上版
-let development = true
+let development = false
 //线上静态资源路径
 let developmentPath = ''
 //所有页面page的名称   在使用页面前请先此注册
@@ -10,7 +10,7 @@ let pages = ['page1', 'page2']
 let pageTiles = ['页面1', '组件的使用']
 let BaseClass = null
 //api接口
-const baseUrl = '127.0.0.1:3000'
+const BASEURL = '127.0.0.1:3000'
 //主内容
 let contentNode = $('#content')[0]
 //对话框之类
@@ -52,7 +52,9 @@ class Base {
 	silderTabClick() {
 		$('#sidebarlist').click((e) => {
 			let pageName = $(e.target).attr('uid')
-			this.changeHash(pageName)
+			if (pageName != undefined && pageName != "undefined") {
+				this.changeHash(pageName)
+			}
 			pageName = null
 		})
 		$('#windowback').click((e) => {
@@ -142,7 +144,7 @@ class Base {
   */
 	hideTobar(type) {
 		if (type === 'hide') {
-			$('#s').css('height', '8%')
+			$('#silderouter').css('height', '8%')
 			$('#silderouter').hide()
 		} else {
 			$('#silderouter').show().css('top', '8%')
@@ -288,28 +290,6 @@ class Base {
 	}
 
   /**
-   * 显示基础的对话框
-   * @param {*} title 
-   * @param {*} content 
-   * @param {*} sucCallback   确定之后的回调
-   */
-	showDialog(title, content, sucCallback) {
-		let html = '<div class="am-modal am-modal-confirm" tabindex="-1" id="basedialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + title + '</div><div class="am-modal-bd">' + content + '</div><div class="am-modal-footer"><span class="am-modal-btn" data-am-modal-cancel>\u53D6\u6D88</span><span class="am-modal-btn" data-am-modal-confirm>\u786E\u5B9A</span></div></div></div>'
-		otherPlugNode.innerHTML = html
-		$(otherPlugNode).show()
-		$('#basedialog').modal({
-			relatedTarget: undefined,
-			onConfirm: function onConfirm() {
-				sucCallback()
-			},
-			// closeOnConfirm: false,
-			onCancel: function onCancel() { }
-		})
-		html = null
-	}
-
-
-  /**
    * 修改页面hash
    * @param {*} hash
    * @param {*} animOpction  动画的属性 
@@ -317,6 +297,13 @@ class Base {
    *   time:   　1   } 时间  不要太长 
    */
 	changeHash(hash, data, animOpction) {
+		if (data === undefined) {
+			data = {}
+		}
+		if (typeof data !== 'object') {
+			this.Component.toast('只能传递Object.', 'danger', 2000)
+			return
+		}
 		this.setPageHandler(hash, data)
 		window.location.href = window.location.origin + ('#' + hash)
 		this.animOpction = animOpction
@@ -332,12 +319,13 @@ class Base {
 		})
 		let data = HandlerModule[index]
 		index = 0
+		HandlerModule[index] = {}
 		return data
 	}
   /**
    * 设置要传递页面的信息
    * @param {*} pageName  
-   * @param {*} data  数据(仅仅支持String) 
+   * @param {*} data  数据(仅支持Object) 
    */
 	setPageHandler(pageName, data) {
 		if ('#' + pageName === window.location.hash) {
@@ -363,7 +351,7 @@ class Base {
    * 页面刷新时保存 HandlerModule
    */
 	refreshHandler() {
-		if (HandlerModule.length > 0) {
+		if (HandlerModule.length > 0 && isAjaxNull(HandlerModule)) {
 			this.localStorage('handler', JSON.stringify(HandlerModule))
 		}
 	}
@@ -483,7 +471,7 @@ function httpGet(ajaxData, sucCallback) {
 	BaseClass.Component.loadingDailog('show', '加载中...')
 	$.ajax({
 		type: 'get',
-		url: baseUrl + ajaxData.url,
+		url: BASEURL + ajaxData.url,
 		dataType: 'json',
 		async: false,
 		data: ajaxData.data,
@@ -507,7 +495,7 @@ function postHttp(url, formData, sucCallback) {
 	BaseClass.Component.loadingDailog('show', '加载中...')
 
 	$.ajax({
-		url: baseUrl + url,
+		url: BASEURL + url,
 		data: formData,
 		method: 'POST',
 		contentType: false,

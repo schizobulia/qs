@@ -7,7 +7,7 @@ class Page1Activity extends ControllerActivity {
   onStart() {
     // BaseClass.hideTobar('hide')
     this.view.find('#handler').click((e) => {
-      BaseClass.changeHash('page2', '来自page1发送的消息',
+      BaseClass.changeHash('page2', { key: 'value' },
         { anim: 'fade', time: 0.5 })   //加入跳转动画
       // BaseClass.changeHash('page2', '来自page1发送的消息')
       this.onDestory();

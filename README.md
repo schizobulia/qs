@@ -78,7 +78,7 @@
     - 模块间的跳转
 
     ```javascript
-        BaseClass.changeHash('模块名称', '需要发送的消息');
+        BaseClass.changeHash('模块名称', {key: 'value'});
         
         //接收发送的消息
         let handleData = BaseClass.getPageHandler('当前模块名称');
@@ -119,3 +119,4 @@
     - 移动端下推荐使用
         - [zepto](http://www.css88.com/doc/zeptojs_api/)
 
+##### 有兴趣一起写的同学可以邮箱联系本人

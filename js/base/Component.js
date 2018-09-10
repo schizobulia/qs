@@ -31,9 +31,9 @@ class Component {
         imgs.push({ file: blob, id: uid })
         pNode.find('#file-list').append(imgNode)
         $(imgNode).click(function (e) {
-          let imguid = $(e.target).attr('uid')
+          // let imguid = $(e.target).attr('uid')
           imgs.map((element, index) => {
-            if (element.id == uid) {
+            if (element.id === uid) {
               imgs.splice(index, 1)
               pNode.find('#file-list')[0].removeChild(this)
               callback(imgs)
@@ -91,7 +91,7 @@ class Component {
 	 */
   notification(title, content, type, callback, location) {
     let divNode = document.createElement('div')
-    let html = `< div id = "notification" class= "component" > <div class="am-alert am-alert-${type}">
+    let html = `<div id = "notification" class= "component" > <div class="am-alert am-alert-${type}">
 							<button type="button" class="am-close" id="close">&times;</button><h4><i class="am-icon-success"></i> ${title}</h4>
 							${content}</div></div > `
     divNode.innerHTML = html
@@ -105,6 +105,26 @@ class Component {
       callback()
     })
     html = ''
-    divNode = null
+  }
+
+  /**
+  * 显示基础的对话框
+  * @param {*} title 
+  * @param {*} content 
+  * @param {*} sucCallback   确定之后的回调
+  */
+  dialog(title, content, sucCallback) {
+    let html = '<div class="am-modal am-modal-confirm" tabindex="-1" id="basedialog"><div class="am-modal-dialog"><div class="am-modal-hd">' + title + '</div><div class="am-modal-bd">' + content + '</div><div class="am-modal-footer"><span class="am-modal-btn" data-am-modal-cancel>\u53D6\u6D88</span><span class="am-modal-btn" data-am-modal-confirm>\u786E\u5B9A</span></div></div></div>'
+    otherPlugNode.innerHTML = html
+    $(otherPlugNode).show()
+    $('#basedialog').modal({
+      relatedTarget: undefined,
+      onConfirm: function onConfirm() {
+        sucCallback()
+      },
+      // closeOnConfirm: false,
+      onCancel: function onCancel() { }
+    })
+    html = null
   }
 }

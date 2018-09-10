@@ -51,6 +51,14 @@ class Page2Activity extends ControllerActivity {
       //   console.log('关闭')
       // }, 'bottom')
     })
+
+    view.find('#dialog').click((e) => {
+      BaseClass.Component.dialog('跪求SSR...', 'success', () => {
+        console.log('关闭')
+      })
+    })
+
     view = null
   }
+
 }
