@@ -5,6 +5,7 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
+[![npm version](https://badge.fury.io/js/5.5.1.svg)](https://www.npmjs.com/package/qs)
 ## 运行
 ```
     node的方式:
@@ -118,5 +119,15 @@
     - [jquery](http://jquery.cuishifeng.cn/)
     - 移动端下推荐使用
         - [zepto](http://www.css88.com/doc/zeptojs_api/)
+
+7. ### 基类说明 
+    - #### ControllerActivity 
+
+    <img src="./doc/生命周期.svg"/>
+
+8. ### 项目地址
+    －  https://www.tyessc.com/qs
+    ##### 注：线上地址因为加入pwa的原因有时会有错误,那是google的问题，不会影响整体运行．
+
 
 ##### 有兴趣一起写的同学可以邮箱联系本人

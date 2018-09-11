@@ -2,16 +2,27 @@
 class Page2Activity extends ControllerActivity {
   constructor(pageName) {
     super(pageName)
+    this.toast = null
+    this.loadingdialog = null
+    this.notification = null
+    this.dialog = null
   }
 
   onStart() {
     let view = this.view
+    this.dialog = view.find('#dialog')
+    this.notification = view.find('#notification')
+    this.loadingdialog = view.find('#loadingdialog')
+    this.toast = view.find('#toast')
+    view = null
+  }
+  bindEvent() {
     /**
     * 多图上传组件代码
     * =============
     */
     let numbers = 2
-    let pNode = view.find('#componentupload')
+    let pNode = this.view.find('#componentupload')
     BaseClass.Component.uploadImg(pNode, numbers, (files) => {
       console.log(files)
     })
@@ -26,7 +37,7 @@ class Page2Activity extends ControllerActivity {
      * 提示信息
      * =============
      */
-    view.find('#toast').click(function (e) {
+    this.toast.bind('click', (e) => {
       BaseClass.Component.toast('内容', 'warning', 3000)
       // BaseClass.Component.toast('内容')
     })
@@ -35,7 +46,7 @@ class Page2Activity extends ControllerActivity {
      * 加载动画
      * =============
      */
-    view.find('#loadingdialog').click((e) => {
+    this.loadingdialog.bind('click', (e) => {
       BaseClass.Component.loadingDailog('show', '加载中...')
     })
 
@@ -43,7 +54,7 @@ class Page2Activity extends ControllerActivity {
      * 通知栏 
      * =============
      */
-    view.find('#notification').click((e) => {
+    this.notification.bind('click', (e) => {
       BaseClass.Component.notification('标题', '这里内容', 'success', () => {
         console.log('关闭')
       }, 'top')
@@ -52,13 +63,17 @@ class Page2Activity extends ControllerActivity {
       // }, 'bottom')
     })
 
-    view.find('#dialog').click((e) => {
+    this.dialog.bind('click', (e) => {
       BaseClass.Component.dialog('跪求SSR...', 'success', () => {
         console.log('关闭')
       })
     })
-
-    view = null
   }
 
+  unBindEvent() {
+    this.dialog.unbind('click')
+    this.notification.unbind('click')
+    this.loadingdialog.unbind('click')
+    this.toast.unbind('click')
+  }
 }

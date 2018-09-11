@@ -1,17 +1,28 @@
 // page1
 class Page1Activity extends ControllerActivity {
+
   constructor(pageName) {
     super(pageName)
+    this.hanlder = null
   }
 
   onStart() {
+    this.hanlder = this.view.find('#handler')
     // BaseClass.hideTobar('hide')
-    this.view.find('#handler').click((e) => {
+  }
+
+  bindEvent() {
+    this.hanlder.bind('click', (e) => {
       BaseClass.changeHash('page2', { key: 'value' },
         { anim: 'fade', time: 0.5 })   //加入跳转动画
       // BaseClass.changeHash('page2', '来自page1发送的消息')
-      this.onDestory();
+      this.onDestory()
     })
+  }
+
+  unBindEvent() {
+    this.hanlder.unbind('click')
+    this.hanlder = null
   }
 }
 
