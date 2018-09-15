@@ -6,8 +6,11 @@ let development = false
 //线上静态资源路径
 let developmentPath = ''
 //所有页面page的名称   在使用页面前请先此注册
-let pages = ['page1', 'page2']
-let pageTiles = ['页面1', '组件的使用']
+/**
+ * 路由
+ */
+let Router = []
+
 let BaseClass = null
 //api接口
 const BASEURL = '127.0.0.1:3000'
@@ -15,8 +18,6 @@ const BASEURL = '127.0.0.1:3000'
 let contentNode = $('#content')[0]
 //对话框之类
 let otherPlugNode = $('#otherplug')[0]
-//默认显示主页
-let defaultPage = pages[0]
 //用户是否在主页
 let isHomePage = true
 
@@ -69,7 +70,7 @@ class Base {
 	startPage() {
 		let pageName = window.location.hash
 		pageName = pageName.slice(1, pageName.length)
-		if (inArray(pages, pageName)) {
+		if (this.isHavePage(pageName)) {
 			isHomePage = false
 			this.closeSidebar()
 			this.backHome()
@@ -78,7 +79,7 @@ class Base {
 			isHomePage = true
 			$('#header').css('height', '53px')
 			this.hideTobar('show')
-			this.readHTML(defaultPage, function (html) { })
+			this.readHTML(this.getDefaultPage().page, function (html) { })
 		}
 		this.changeHeadeLeft()
 		pageName = null
@@ -156,7 +157,7 @@ class Base {
    * @param {*} pageName 
    */
 	loadPageScrpat(pageName, sucCallback) {
-		$.getScript(window.location.origin + `${developmentPath}/js/` + pageName + '.js', function () {
+		$.getScript(window.location.origin + `${developmentPath}/js/` + pageName + '.js', () => {
 			sucCallback()
 		})
 	}
@@ -210,7 +211,7 @@ class Base {
    * @param {*} sucCallback 
    */
 	readHTML(pageName, sucCallback) {
-		if (!inArray(pages, pageName)) {
+		if (!this.isHavePage(pageName)) {
 			return
 		}
 		let localPageData = this.getLocalStorage(pageName)
@@ -284,9 +285,11 @@ class Base {
    * @param {*} title 
    */
 	changePageTitle(pageName) {
-		let i = pages.indexOf(pageName)
-		$('#pagetitle').text(pageTiles[i])
-		i = null
+		Router.find((element) => {
+			if (element.page === pageName) {
+				$('#pagetitle').text(element.title)
+			}
+		})
 	}
 
   /**
@@ -366,19 +369,51 @@ class Base {
 		}
 		data = null
 	}
+
+	/**
+	 * 页面是否被注册
+	 * @param {*} pageName 
+	 */
+	isHavePage(pageName) {
+		return Router.find((element) => {
+			return element.page === pageName
+		})
+	}
+
 	/**
 	 * 加载开发时需要模块
 	 */
 	loadingDebug(callback) {
 		if (development) {
 			callback()
-		} else {
-			this.loadPageScrpat(`base/ControllerActivity`, () => {
-				this.loadPageScrpat(`base/Component`, () => {
-					callback()
-				})
-			})
+			return
 		}
+		new Promise((resolve, reject) => {
+			this.loadPageScrpat(`base/RouterController`, () => {
+				Router = _Router.getRouter()
+				resolve(true)
+			})
+		}).catch((e) => {
+			console.error(e)
+		}).then(() => {
+			this.loadPageScrpat(`base/ControllerActivity`, () => { })
+		}).catch((e) => {
+			console.error(e)
+		}).then(() => {
+			this.loadPageScrpat(`base/Component`, () => { callback() })
+		}).catch((error) => {
+			console.error(error)
+		})
+	}
+
+
+	/**
+	 * 获取默认首页
+	 */
+	getDefaultPage() {
+		return Router.find((element) => {
+			return element.default === true
+		})
 	}
 }
 
@@ -409,13 +444,10 @@ function initPage() {
  */
 function destory() {
 	BaseClass.clearLocalStorage('localstorage')
-	pages = null
 	development = null
-	pageTiles = null
 	BaseClass = null
 	contentNode = null
 	otherPlugNode = null
-	defaultPage = null
 	isHomePage = null
 	HandlerModule = null
 	ErrorMsg = null
@@ -423,7 +455,7 @@ function destory() {
 
 
 /**
- * 是否有譔页面
+ * 是否有该元素
  * @param {*} array 
  * @param {*} pageName 
  */
@@ -451,7 +483,7 @@ function getArrayByKey(arr, key, value) {
  * 传人参数是否为空
  * @param {*} array 
  */
-function isAjaxNull() {
+function isAjaxNull(array) {
 	for (let index = 0; index < array.length; index++) {
 		let element = array[index]
 		if (element === 'undefined' || !element || element === '') {

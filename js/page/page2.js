@@ -16,7 +16,7 @@ class Page2Activity extends ControllerActivity {
     this.toast = view.find('#toast')
     view = null
   }
-  bindEvent() {
+  onBindEvent() {
     /**
     * 多图上传组件代码
     * =============
@@ -70,7 +70,7 @@ class Page2Activity extends ControllerActivity {
     })
   }
 
-  unBindEvent() {
+  onUnBindEvent() {
     this.dialog.unbind('click')
     this.notification.unbind('click')
     this.loadingdialog.unbind('click')

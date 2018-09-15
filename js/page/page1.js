@@ -11,7 +11,7 @@ class Page1Activity extends ControllerActivity {
     // BaseClass.hideTobar('hide')
   }
 
-  bindEvent() {
+  onBindEvent() {
     this.hanlder.bind('click', (e) => {
       BaseClass.changeHash('page2', { key: 'value' },
         { anim: 'fade', time: 0.5 })   //加入跳转动画
@@ -20,7 +20,7 @@ class Page1Activity extends ControllerActivity {
     })
   }
 
-  unBindEvent() {
+  onUnBindEvent() {
     this.hanlder.unbind('click')
     this.hanlder = null
   }
