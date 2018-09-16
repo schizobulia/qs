@@ -38,7 +38,7 @@ class Page2Activity extends ControllerActivity {
      * =============
      */
     this.toast.bind('click', (e) => {
-      BaseClass.Component.toast('内容', 'warning', 3000)
+      BaseClass.Component.toast('内容', 'warning', 5)
       // BaseClass.Component.toast('内容')
     })
 

@@ -49,13 +49,13 @@ class Component {
    * 提示信息
    * @param {*} content 
    * @param {*} type [primary, secondary, success, warning, danger, success]
-   * @param {*} time 
+   * @param {*} time 此处时间尽量还要超过20
    */
   toast(content, type, time) {
     $(otherPlugNode).html(`
 						<span class= "toast am-badge am-badge-${type || 'warning'}" > ${content}</span>`).show()
     $(otherPlugNode).fadeIn(500, () => {
-      $(otherPlugNode).fadeOut(time || 100, () => {
+      $(otherPlugNode).fadeOut(time || 10, () => {
         $(otherPlugNode).html(``)
       })
     })

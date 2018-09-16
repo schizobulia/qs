@@ -5,7 +5,6 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-[![npm version](https://badge.fury.io/js/5.5.1.svg)](https://www.npmjs.com/package/qs)
 ## 运行
 ```
     node的方式:
@@ -49,6 +48,9 @@
     └───js
     │   └───base
     │   │      base.js (项目公共类)
+    │   │      Component.js (组件类)
+    │   │      ControllerActivity.js (控制层基类)
+    │   │      RouterController.js (路由层基类)
     │   │        
     │   └───page (module层)
     │   │      page1.js
@@ -69,11 +71,10 @@
 
 3. ### 创建一个模块
     - 创建一个view与Module(必需同名)
-    - 在base.js中注册该模块
+    - 在RouterController.js中注册该模块
     - Module中创建的类需要继承ControllerActivity  类名为: 模块名(首字母大写) + Activity
     ```javascript
-        let pages = ['page1', 'page2']; //所有页面page的名称   在使用页面前请先此注册
-        let pageTiles = ['页面1', '组件的使用'];
+        _Router.push('/', 'page1', '首页')
     ```
 
     - 模块间的跳转

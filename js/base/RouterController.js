@@ -9,7 +9,9 @@ class RouterController {
 
   /**
    * 注册路由
-   * @param {*} path 
+   * @param {*} path　路径 
+   * @param {*} module1 模块名称
+   * @param {*} title 页面标题
    */
   push(path, module1, title) {
     let isDefault = false
@@ -35,7 +37,10 @@ class RouterController {
     })
     return false
   }
-
+  /**
+   * 检查路由
+   * @param {*} path 
+   */
   checkPath(path) {
     this.routerArray.find((element) => {
       if (element.page === path) {
@@ -46,9 +51,32 @@ class RouterController {
       }
     })
   }
-
+  /**
+   * 获取所有路由的信息
+   */
   getRouter() {
     return this.routerArray
+  }
+
+  /**
+  * 页面是否被注册
+  * @param {*} pageName 
+  */
+  isHavePage(pageName) {
+    return this.routerArray.find((element) => {
+      return element.module === pageName
+    })
+  }
+
+  /**
+   * 根据path获取router
+   */
+  getRouterByPath(path) {
+    return this.routerArray.find((element) => {
+      if (element.module === path) {
+        return element
+      }
+    })
   }
 }
 

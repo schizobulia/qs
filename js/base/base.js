@@ -70,16 +70,22 @@ class Base {
 	startPage() {
 		let pageName = window.location.hash
 		pageName = pageName.slice(1, pageName.length)
-		if (this.isHavePage(pageName)) {
-			isHomePage = false
-			this.closeSidebar()
-			this.backHome()
-			this.readHTML(pageName, function (html) { })
-		} else {
+		if (pageName === '/' || pageName === '') {
 			isHomePage = true
 			$('#header').css('height', '53px')
 			this.hideTobar('show')
-			this.readHTML(this.getDefaultPage().page, function (html) { })
+			this.readHTML(this.getDefaultPage().module, function (html) { })
+		} else {
+			pageName = '/' + pageName
+			if (_Router.isHavePage(pageName)) {
+				isHomePage = false
+				this.closeSidebar()
+				this.backHome()
+				this.readHTML(pageName, function (html) { })
+			} else {
+				isHomePage = false
+				console.error('请先注册...')
+			}
 		}
 		this.changeHeadeLeft()
 		pageName = null
@@ -210,10 +216,11 @@ class Base {
    * 获取单个页面
    * @param {*} sucCallback 
    */
-	readHTML(pageName, sucCallback) {
-		if (!this.isHavePage(pageName)) {
+	readHTML(path, sucCallback) {
+		if (!_Router.isHavePage(path)) {
 			return
 		}
+		let pageName = _Router.getRouterByPath(path).page
 		let localPageData = this.getLocalStorage(pageName)
 		if (localPageData) {
 			this.setShowPage(pageName, localPageData)
@@ -308,7 +315,11 @@ class Base {
 			return
 		}
 		this.setPageHandler(hash, data)
-		window.location.href = window.location.origin + ('#' + hash)
+		if (hash === '/') {
+			window.location.href = window.location.origin + '#'
+		} else {
+			window.location.href = window.location.origin + ('#' + hash)
+		}
 		this.animOpction = animOpction
 	}
 
@@ -368,16 +379,6 @@ class Base {
 			this.clearLocalStorage('handler')
 		}
 		data = null
-	}
-
-	/**
-	 * 页面是否被注册
-	 * @param {*} pageName 
-	 */
-	isHavePage(pageName) {
-		return Router.find((element) => {
-			return element.page === pageName
-		})
 	}
 
 	/**

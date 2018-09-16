@@ -16,14 +16,6 @@ gulp.task("conversion", function (callback) {
     .pipe(concat("base.js"))
     .pipe(uglify())
     .pipe(gulp.dest('src/js/base/'))
-
-  // gulp.src("js/base/**/*.js")
-  //   .pipe(babel({
-  //     presets: ["es2015"]
-  //   }))
-  //   .pipe(gulp.dest("src/js/base/"))
-  //   .pipe(uglify())
-  //   .pipe(gulp.dest("src/js/base/"))
 })
 gulp.task("conversionPage", function () {
   gulp.src("js/page/**/*.js")
