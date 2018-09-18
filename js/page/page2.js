@@ -1,5 +1,5 @@
 //page2
-class Page2Activity extends ControllerActivity {
+class Page2Activity extends ActivityController {
   constructor(pageName) {
     super(pageName)
     this.toast = null

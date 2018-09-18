@@ -72,7 +72,7 @@
 3. ### 创建一个模块
     - 创建一个view与Module(必需同名)
     - 在RouterController.js中注册该模块
-    - Module中创建的类需要继承ControllerActivity  类名为: 模块名(首字母大写) + Activity
+    - Module中创建的类需要继承ActivityController  类名为: 模块名(首字母大写) + Activity
     ```javascript
         _Router.push('/', 'page1', '首页')
     ```
@@ -122,7 +122,7 @@
         - [zepto](http://www.css88.com/doc/zeptojs_api/)
 
 7. ### 基类说明 
-    - #### ControllerActivity 
+    - #### ActivityController 
 
     <img src="./doc/生命周期.svg"/>
 

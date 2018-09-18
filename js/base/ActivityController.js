@@ -2,7 +2,7 @@
  * Controller类 
  * 每个module层会生成一个Controller
  */
-class ControllerActivity {
+class ActivityController {
   constructor(pageName) {
     this.pageName = pageName
     this.view = $(`#${pageName}`)
@@ -45,5 +45,6 @@ class ControllerActivity {
     this.onUnBindEvent()
     contentNode.removeChild(this.view[0])
     this.view = null
+    activityObj = null
   }
 }

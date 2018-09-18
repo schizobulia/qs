@@ -20,6 +20,7 @@ let contentNode = $('#content')[0]
 let otherPlugNode = $('#otherplug')[0]
 //用户是否在主页
 let isHomePage = true
+let activityObj = null
 
 /**
  * 模块间通信
@@ -230,11 +231,13 @@ class Base {
 		let activity = this.getActivityNameByPageName(pageName)
 		if (this.isCreaterActivity(activity)) {
 			this.loadPageScrpat(`page/${pageName}`, function (s) {
-				eval(`new ${activity}Activity('${pageName}page').onCreater()`)
+				eval(`activityObj = new ${activity}Activity('${pageName}page')`)
 				activity = null
+				activityObj.onCreater()
 			})
 		} else {
-			eval(`new ${activity}Activity('${pageName}page').onCreater()`)
+			eval(`activityObj = new ${activity}Activity('${pageName}page')`)
+			activityObj.onCreater()
 			activity = null
 		}
 		this.changePageTitle(pageName)
@@ -397,7 +400,7 @@ class Base {
 		}).catch((e) => {
 			console.error(e)
 		}).then(() => {
-			this.loadPageScrpat(`base/ControllerActivity`, () => { })
+			this.loadPageScrpat(`base/ActivityController`, () => { })
 		}).catch((e) => {
 			console.error(e)
 		}).then(() => {
@@ -452,6 +455,7 @@ function destory() {
 	isHomePage = null
 	HandlerModule = null
 	ErrorMsg = null
+	activityObj = null
 }
 
 

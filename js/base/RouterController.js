@@ -15,7 +15,7 @@ class RouterController {
    */
   push(path, module1, title) {
     let isDefault = false
-    if (this.check(path, module1, title) && this.checkPath(path)) {
+    if (this.check(path, module1, title) || this.checkPath(path)) {
       console.error('路由异常')
       return
     }
@@ -43,8 +43,8 @@ class RouterController {
    */
   checkPath(path) {
     this.routerArray.find((element) => {
-      if (element.page === path) {
-        console.error('该路由已注册')
+      if (element.module === path) {
+        console.error(`${path}-->路由已注册`)
         return true
       } else {
         return false
@@ -83,4 +83,4 @@ class RouterController {
 const _Router = new RouterController()
 
 _Router.push('/', 'page1', '首页')
-_Router.push('/page2', 'page2', '组件的使用')
+_Router.push('/page2/page1', 'page2', '组件的使用')
