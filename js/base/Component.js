@@ -126,4 +126,27 @@ class Component {
     })
     html = null
   }
+
+  /**
+   * 地球控件
+   * 具体的api请查看　https://github.com/syt123450/giojs/blob/master/README_zh.md
+   * @param {*} contentNode 
+   */
+  earth(contentNode, callback) {
+    new Promise((resolve, reject) => {
+      BaseClass.loadPageScrpat('plug/three.min', () => {
+        resolve(true)
+      })
+    }).catch((err) => {
+      console.error(err)
+    }).then(() => {
+      BaseClass.loadPageScrpat('plug/gio.min', () => {
+        let controller = new GIO.Controller(contentNode)
+        controller.init()
+        callback(controller)
+      })
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
 }

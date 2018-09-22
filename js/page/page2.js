@@ -6,6 +6,7 @@ class Page2Activity extends ActivityController {
     this.loadingdialog = null
     this.notification = null
     this.dialog = null
+    this.earth = null
   }
 
   onStart() {
@@ -14,6 +15,7 @@ class Page2Activity extends ActivityController {
     this.notification = view.find('#notification')
     this.loadingdialog = view.find('#loadingdialog')
     this.toast = view.find('#toast')
+    this.earth = view.find('#earthshow')
     view = null
   }
   onBindEvent() {
@@ -68,6 +70,17 @@ class Page2Activity extends ActivityController {
         console.log('关闭')
       })
     })
+
+
+    /**
+     * 地球控件
+     */
+    this.earth.bind('click', (e) => {
+      let earthDiv = this.view.find('#earth').show()
+      BaseClass.Component.earth(earthDiv[0], (controller) => {
+        console.log(controller)
+      })
+    })
   }
 
   onUnBindEvent() {
@@ -75,5 +88,6 @@ class Page2Activity extends ActivityController {
     this.notification.unbind('click')
     this.loadingdialog.unbind('click')
     this.toast.unbind('click')
+    this.earth.unbind('click')
   }
 }
