@@ -1,14 +1,17 @@
 /**
- *const Event = new _Event();
-  Event.on('click', (data) => {
-    console.log(data);
-    Event.remove('click')
-  });
-  setTimeout(() => {
-    Event.emit('click', 'data');
-  }, 1000); 
+_Event.on('click', (data) => {
+  console.log(data);
+});
+_Event.on('click1', (data) => {
+  console.log(data);
+});
+
+_Event.emit('click', 'click data');
+_Event.emit('click1', 'click data1'); 
 */
-class _Event {
+
+class MEvent {
+
   constructor() {
     this.EVENTARR = [];
   }
@@ -25,8 +28,6 @@ class _Event {
     this.EVENTARR.map((e) => {
       if (e.name === name) {
         e.fun(data);
-      } else {
-        throw new Error('事件未被注册');
       }
     });
   }
@@ -46,3 +47,8 @@ class _Event {
     this.EVENTARR = [];
   }
 }
+
+const _Event = new MEvent()
+
+
+
